@@ -152,7 +152,7 @@ let MastodonClient = class extends EventTarget {
 	USER_NOEXEMPT = 1;
 	USER_EXCLUDED = 2;
 	#sorter(a, b) {
-		return (b.created || 0) - (a.created || 0);
+		return (b.atNew || 0) - (a.atNew || 0);
 	};
 	#addPost() {};
 	#modPost() {};
