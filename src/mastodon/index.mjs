@@ -118,6 +118,7 @@ let SelfHealWS = class extends EventTarget {
 const renameMap = {
 	"account": "user",
 	"application": "app",
+	"content": "text",
 	"created_at": "atNew",
 	"edited_at": "atEdit",
 	"favourites_count": "sumFav",
@@ -131,12 +132,13 @@ const renameMap = {
 	"replies_count": "sumReply",
 	"sensitive": "cwReal",
 	"spoiler_text": "cwText",
+	"visibility": "access",
 	"followers_count": "sumFan",
 	"following_count": "sumSub"
 };
 let MastodonClient = class extends EventTarget {
 	#limitServer = 40; // Max returned posts
-	#limitTotal = 100; // How many posts should be tracked
+	#limitTotal = 80; // How many posts should be tracked
 	#expiry = 259200000; // Max TTL for 3 days
 	#hookInstance = "";
 	#hookAuthToken = "";

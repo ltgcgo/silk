@@ -1,1 +1,1 @@
-"use strict";(()=>{var t="currentTarget,explicitOriginalTarget,originalTarget,srcElement,target".split(",");})();
+"use strict";(()=>{var i="currentTarget,explicitOriginalTarget,originalTarget,srcElement,target".split(",");var e=function(t,{persistent:s}){return new Response("This works.")};Deno.serve(async function(t,s){return await e(t,{persistent:!0})});})();

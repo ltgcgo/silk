@@ -1,1 +1,1 @@
-"use strict";(()=>{var t="currentTarget,explicitOriginalTarget,originalTarget,srcElement,target".split(",");})();
+"use strict";(()=>{var i="currentTarget,explicitOriginalTarget,originalTarget,srcElement,target".split(",");var e=function(t,{persistent:s}){return new Response("This works.")};addEventListener("fetch",async function(t){t.respondWith(await e(t.request,{persistent:!1}))});})();
