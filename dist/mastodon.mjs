@@ -163,7 +163,7 @@ var renameMap = {
   }
   launch(streamOnly) {
     this.#launched || (this.#servers.forEach(async (e) => {
-      if (console.info(`Starting for ${e.domain}.`), this.startFor.call(this, e), !streamOnly) {
+      if (console.info(`Starting for ${e.domain}.`), console.debug(e), this.startFor.call(this, e), !streamOnly) {
         let opt = {
           headers: {}
         };
@@ -174,7 +174,7 @@ var renameMap = {
             event: "update",
             payload
           });
-        }) : console.error(`Post fetching for ${e.domain} failed: ${request.status} ${request.statusText}`);
+        }) : (console.error(`Post fetching for ${e.domain} failed: ${request.status} ${request.statusText}`), console.error(await request.json()));
       }
     }), this.#launched = !0);
   }
@@ -198,7 +198,7 @@ var renameMap = {
       };
       this.#svrRef[e] = this.#servers.length, this.#servers.push(server);
     }), serversTk?.forEach((e) => {
-      this.#servers[this.#svrRef[e[0]]].auth = !0;
+      this.#servers[this.#svrRef[e[0]]].auth = e[1];
     }), this.#hookInstance = instance, this.launch(streamOnly);
   }
 };

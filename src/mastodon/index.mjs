@@ -362,6 +362,7 @@ let MastodonClient = class extends EventTarget {
 		} else {
 			this.#servers.forEach(async (e) => {
 				console.info(`Starting for ${e.domain}.`);
+				console.debug(e);
 				this.startFor.call(this, e);
 				if (!streamOnly) {
 					let opt = {
@@ -380,6 +381,7 @@ let MastodonClient = class extends EventTarget {
 						});
 					} else {
 						console.error(`Post fetching for ${e.domain} failed: ${request.status} ${request.statusText}`);
+						console.error(await request.json());
 					};
 				};
 			});
@@ -411,7 +413,7 @@ let MastodonClient = class extends EventTarget {
 			this.#servers.push(server);
 		});
 		serversTk?.forEach((e) => {
-			this.#servers[this.#svrRef[e[0]]].auth = true;
+			this.#servers[this.#svrRef[e[0]]].auth = e[1];
 		});
 		this.#hookInstance = instance;
 		this.launch(streamOnly);

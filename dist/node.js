@@ -323,7 +323,7 @@ if(!globalThis.self){globalThis.self=globalThis};
     }
     launch(streamOnly) {
       this.#launched || (this.#servers.forEach(async (e) => {
-        if (console.info(`Starting for ${e.domain}.`), this.startFor.call(this, e), !streamOnly) {
+        if (console.info(`Starting for ${e.domain}.`), console.debug(e), this.startFor.call(this, e), !streamOnly) {
           let opt = {
             headers: {}
           };
@@ -334,7 +334,7 @@ if(!globalThis.self){globalThis.self=globalThis};
               event: "update",
               payload
             });
-          }) : console.error(`Post fetching for ${e.domain} failed: ${request.status} ${request.statusText}`);
+          }) : (console.error(`Post fetching for ${e.domain} failed: ${request.status} ${request.statusText}`), console.error(await request.json()));
         }
       }), this.#launched = !0);
     }
@@ -358,7 +358,7 @@ if(!globalThis.self){globalThis.self=globalThis};
         };
         this.#svrRef[e] = this.#servers.length, this.#servers.push(server);
       }), serversTk?.forEach((e) => {
-        this.#servers[this.#svrRef[e[0]]].auth = !0;
+        this.#servers[this.#svrRef[e[0]]].auth = e[1];
       }), this.#hookInstance = instance, this.launch(streamOnly);
     }
   };
@@ -398,7 +398,7 @@ if(!globalThis.self){globalThis.self=globalThis};
             e.send(runCache);
           }), batchCache = utf8Enc.encode(JSON.stringify(mastoClient.getPosts()));
         }), mastoClient.addEventListener("postDel", async ({ data }) => {
-          let runCache = `{"event":"set","data":${JSON.stringify(data)}}`;
+          let runCache = `{"event":"delete","data":${JSON.stringify(data)}}`;
           activeClients.forEach(async (e) => {
             e.send(runCache);
           }), batchCache = utf8Enc.encode(JSON.stringify(mastoClient.getPosts()));
