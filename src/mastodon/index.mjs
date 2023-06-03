@@ -249,20 +249,12 @@ let MastodonClient = class extends EventTarget {
 	};
 	receiver(server, msg) {
 		let targetData;
+		let dispatchEvent = true;
 		switch (msg.event) {
-			case "update": {
-				// Post creation
-				let data = msg.payload.constructor == String ? JSON.parse(msg.payload) : msg.payload;
-				this.#dataProcessor(data, server);
-				this.#postStore.unshift(data);
-				this.#postRef[data.rid] = data;
-				console.error(`CREATE Post ${data.rid} success.`);
-				targetData = data;
-				break;
-			};
+			case "update":
 			case "status.update": {
-				// Post edit
-				let data = JSON.parse(msg.payload);
+				// Post creation and edit
+				let data = msg.payload.constructor == String ? JSON.parse(msg.payload) : msg.payload;
 				this.#dataProcessor(data, server);
 				if (this.#postRef[data.rid]) {
 					let pidx = this.#postStore.indexOf(this.#postRef[data.rid]);
@@ -274,7 +266,10 @@ let MastodonClient = class extends EventTarget {
 						console.error(`MODIFY Post ${data.rid} not found in postStore.`);
 					};
 				} else {
-					console.error(`MODIFY Post ${data.rid} not found in postRef.`);
+					console.error(`MODIFY Post ${data.rid} not found in postRef. Creating.`);
+					this.#postStore.unshift(data);
+					this.#postRef[data.rid] = data;
+					console.error(`CREATE Post ${data.rid} success.`);
 				};
 				targetData = data;
 				break;
@@ -298,6 +293,7 @@ let MastodonClient = class extends EventTarget {
 			};
 			default: {
 				console.error(`Unknown message type ${msg.event}.`);
+				console.error(msg);
 			};
 		};
 		this.#postStore.sort(this.#sorter);
@@ -306,7 +302,11 @@ let MastodonClient = class extends EventTarget {
 				delete this.#postRef[e.rid];
 			});
 		};
-		this.dispatchEvent(new MessageEvent(eventRemap[msg.event] || msg.event, {data: targetData}));
+		if (dispatchEvent) {
+			this.dispatchEvent(new MessageEvent(eventRemap[msg.event] || msg.event, {data: targetData}));
+		} else {
+			console.error(`Event dispatch aborted.`);
+		};
 	};
 	//addServer() {};
 	getPosts() {
@@ -342,12 +342,17 @@ let MastodonClient = class extends EventTarget {
 				if (e.auth) {
 					opt.headers["Authorization"] = `Bearer ${e.auth}`;
 				};
-				(await (await fetch(`https://${e.domain}/api/v1/timelines/public?local=1&limit=${this.#limitServer}`)).json())?.forEach((payload) => {
-					this.receiver(e, {
-						event: "update",
-						payload
+				let request = await fetch(`https://${e.domain}/api/v1/timelines/public?local=true&only_media=false&limit=${this.#limitServer}`);
+				if (request.status == 200) {
+					(await request.json())?.forEach((payload) => {
+						this.receiver(e, {
+							event: "update",
+							payload
+						});
 					});
-				});
+				} else {
+					console.error(`Post fetching for ${e.domain} failed: ${request.status} ${request.statusText}`);
+				};
 			};
 		});
 	};

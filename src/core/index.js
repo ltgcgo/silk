@@ -2,7 +2,10 @@
 
 import {MastodonClient} from "../mastodon/index.mjs";
 
+let utf8Enc = new TextEncoder("utf-8");
+
 let main = async function (args) {
+	let serverImpl = `Silk@${WingBlade.variant}`;
 	switch (args[0] || "serve") {
 		case "login": {
 			let instance = args[1];
@@ -72,8 +75,74 @@ let main = async function (args) {
 			};
 			console.info(mastoConf);
 			let mastoClient = new MastodonClient(mastoConf);
-			WingBlade.serve(() => {
-				return new Response("Test me!");
+			let batchCache = utf8Enc.encode(`[]`);
+			let activeClients = [];
+			mastoClient.addEventListener("postNew", async ({data}) => {
+				let runCache = utf8Enc.encode(`{"event":"set","data":${JSON.stringify(data)}}`);
+				activeClients.forEach(async (e) => {
+					e.send();
+				});
+				batchCache = utf8Enc.encode(JSON.stringify(mastoClient.getPosts()));
+			});
+			mastoClient.addEventListener("postEdit", async ({data}) => {
+				let runCache = utf8Enc.encode(`{"event":"set","data":${JSON.stringify(data)}}`);
+				activeClients.forEach(async (e) => {
+					e.send();
+				});
+			});
+			mastoClient.addEventListener("postDel", async ({data}) => {
+				let runCache = utf8Enc.encode(`{"event":"delete","data":${JSON.stringify(data)}}`);
+				activeClients.forEach(async (e) => {
+					e.send();
+				});
+			});
+			WingBlade.serve((request) => {
+				let url = new URL(request.url);
+				switch (request.method?.toLowerCase()) {
+					case "get": {
+						switch (url.pathname) {
+							case "/nr/silk/timeline":
+							case "/nr/silk/timeline/": {
+								return new Response(batchCache, {
+									status: 200,
+									headers: {
+										"content-type": "application/json",
+										"server": serverImpl
+									}
+								});
+								break;
+							};
+							case "/rt/silk/timeline":
+							case "/rt/silk/timeline/": {
+								if (request.headers.get("upgrade") == "websocket") {
+									return new Response(`WebSocket isn't supported yet.`, {
+										status: 400,
+										"server": serverImpl
+									});
+								} else {
+									return new Response(`SSE isn't supported yet.`, {
+										status: 400,
+										"server": serverImpl
+									});
+								};
+								break;
+							};
+							default: {
+								return new Response(`Endpoint ${url.pathname} not found.`, {
+									status: 404,
+									"server": serverImpl
+								});
+							};
+						};
+						break;
+					};
+					default: {
+						return new Response("Method disallowed.", {
+							status: 405,
+							"server": serverImpl
+						});
+					};
+				};
 			});
 			break;
 		};
