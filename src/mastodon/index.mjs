@@ -115,12 +115,14 @@ let SelfHealWS = class extends EventTarget {
 	};
 };
 
+// Sacrifice some CPU cycles for less storage
 const renameMap = {
+	// Post
 	"account": "user",
 	"application": "app",
 	"content": "text",
-	"created_at": "atNew",
-	"edited_at": "atEdit",
+	"created_at": "atNew", // Unix TS
+	"edited_at": "atEdit", // Unix TS
 	"favourites_count": "sumFav",
 	"in_reply_to_account_id": "replyUser",
 	"in_reply_to_id": "replyPost",
@@ -133,8 +135,32 @@ const renameMap = {
 	"sensitive": "cwReal",
 	"spoiler_text": "cwText",
 	"visibility": "access",
+	// User
 	"followers_count": "sumFan",
-	"following_count": "sumSub"
+	"following_count": "sumSub",
+	"display_name": "dispName",
+	"avatar_static": "avatarStatic",
+	"header_static": "headerStatic",
+	"statuses_count": "sumPost",
+	"last_status_at": "atLastPost",
+	"noindex": "noIndex",
+	"verified_at": "atVerify", // Unix TS
+	// Emoji
+	"shortcode": "code",
+	"static_url": "static",
+	"visible_in_picker": "inPicker",
+	// Poll
+	"expires_at": "atExpire", // Unix TS
+	"votes_count": "sumVote",
+	"voters_count": "sumVoter",
+	// App
+	"website": "site",
+	// Media
+	"preview_url": "preview",
+	"remote_url": "remote",
+	"preview_remote_url": "previewRemote",
+	"text_url": "text",
+	"description": "alt"
 };
 let MastodonClient = class extends EventTarget {
 	#limitServer = 40; // Max returned posts
@@ -172,14 +198,42 @@ let MastodonClient = class extends EventTarget {
 		if (post.atEdit) {
 			post.atEdit = new Date(post.atEdit).getTime();
 		};
+		if (post.atVerify) {
+			post.atVerify = new Date(post.atVerify).getTime();
+		};
+		if (post.atExpire) {
+			post.atExpire = new Date(post.atExpire).getTime();
+		};
+		if (post.app) {
+			this.#normalizer(post.app);
+		};
+		if (post.user) {
+			this.#normalizer(post.user);
+		};
+		post.media?.forEach((e) => {
+			this.#normalizer(e);
+		});
+		post.emojis?.forEach((e) => {
+			this.#normalizer(e);
+		});
+		post.ats?.forEach((e) => {
+			this.#normalizer(e);
+		});
+		if (post.user) {
+			post.user.fields?.forEach((e) => {
+				this.#normalizer(e);
+			});
+		};
+		if (post.poll) {
+			post.poll.options?.forEach((e) => {
+				this.#normalizer(e);
+			});
+			this.#normalizer(post.poll);
+		};
 		return post;
 	};
 	#dataProcessor(data, server) {
 		this.#normalizer(data);
-		this.#normalizer(data.user);
-		data.ats?.forEach((e) => {
-			this.#normalizer(e);
-		});
 		if (data?.user?.username) {
 			data.handle = `@${data.user.username}@${server.domain}`;
 		};
