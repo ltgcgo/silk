@@ -1,0 +1,42 @@
+{
+	"name": "lightingale-silk",
+	"type": "module",
+	"description": "🕸 Bringing the fandom together.",
+	"keywords": [],
+	"homepage": "https://github.com/ltgcgo/silk",
+	"bugs": {
+		"url": "https://github.com/ltgcgo/silk/issues"
+	},
+	"license": "GPL-3.0-only",
+	"author": "Lumière Élevé (https://github.com/PoneyClairDeLune)",
+	"funding": [
+		{
+			"type": "individual",
+			"url": "https://github.com/PoneyClairDelune"
+		}
+	],
+	"engines": {
+		"node": ">=18.0.0"
+	},
+	"os": [
+		"linux",
+		"darwin",
+		"android",
+		"windows"
+	],
+	"cpu": [
+		"x64",
+		"arm64"
+	],
+	"files": [
+		"dist/*",
+		"shx",
+		"sh/nodeTest.sh",
+		"sh/denoTest.sh",
+		"sh/bunTest.sh"
+	],
+	"dependencies": {
+		"undici": "^5.21.0",
+		"ws": "^8.12.0"
+	}
+}

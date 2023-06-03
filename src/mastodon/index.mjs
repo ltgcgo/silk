@@ -15,6 +15,7 @@ let shapeshiftEvent = function (ev, victim, shape) {
 	return ev;
 };
 
+/*
 let SelfHealWS = class extends EventTarget {
 	CONNECTING = 0;
 	OPEN = 1;
@@ -114,6 +115,7 @@ let SelfHealWS = class extends EventTarget {
 		this.#start();
 	};
 };
+*/
 
 // Sacrifice some CPU cycles for less storage
 const renameMap = {
@@ -161,6 +163,11 @@ const renameMap = {
 	"preview_remote_url": "previewRemote",
 	"text_url": "text",
 	"description": "alt"
+},
+eventRemap = {
+	"update": "postNew",
+	"status.update": "postEdit",
+	"delete": "postDel"
 };
 let MastodonClient = class extends EventTarget {
 	#limitServer = 40; // Max returned posts
@@ -241,6 +248,7 @@ let MastodonClient = class extends EventTarget {
 		return data;
 	};
 	receiver(server, msg) {
+		let targetData;
 		switch (msg.event) {
 			case "update": {
 				// Post creation
@@ -249,7 +257,7 @@ let MastodonClient = class extends EventTarget {
 				this.#postStore.unshift(data);
 				this.#postRef[data.rid] = data;
 				console.error(`CREATE Post ${data.rid} success.`);
-				this.dispatchEvent(new MessageEvent("postnew", {data}));
+				targetData = data;
 				break;
 			};
 			case "status.update": {
@@ -268,7 +276,7 @@ let MastodonClient = class extends EventTarget {
 				} else {
 					console.error(`MODIFY Post ${data.rid} not found in postRef.`);
 				};
-				this.dispatchEvent(new MessageEvent("postedit", {data}));
+				targetData = data;
 				break;
 			};
 			case "delete": {
@@ -285,6 +293,7 @@ let MastodonClient = class extends EventTarget {
 				} else {
 					console.error(`DELETE Post ${rid} not found in postRef.`);
 				};
+				targetData = msg.payload;
 				break;
 			};
 			default: {
@@ -297,6 +306,7 @@ let MastodonClient = class extends EventTarget {
 				delete this.#postRef[e.rid];
 			});
 		};
+		this.dispatchEvent(new MessageEvent(eventRemap[msg.event] || msg.event, {data: targetData}));
 	};
 	//addServer() {};
 	getPosts() {
