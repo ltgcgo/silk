@@ -180,7 +180,7 @@ let WingBlade = {
 		});
 		server.listen(port, hostname, () => {
 			(opt.onListen || function ({port, hostname}) {
-				console.error(`Serving at http://${hostname}:${port}`);
+				console.error(`WingBlade serving at http://${hostname}:${port}`);
 			})({port, hostname});
 		});
 		return server;

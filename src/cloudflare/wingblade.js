@@ -9,6 +9,7 @@ let WingBlade = {
 	version: "v1.0.0",
 	persist: true,
 	exit: (code = 0) => {
+		throw(new Error(`WingBlade attempted exitting with code ${code}.`));
 	},
 	getEnv: (key, fallbackValue) => {
 		return self[key] || fallbackValue;
@@ -29,6 +30,7 @@ let WingBlade = {
 			let clientInfo = request.headers.get("cf-connecting-ip");
 			event.respondWith(handler(request));
 		});
+		console.error(`WingBlade serving at (Wrangler Dev Server)`);
 	},
 	setEnv: (key, value) => {
 		self[key] = value;

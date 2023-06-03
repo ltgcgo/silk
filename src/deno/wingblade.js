@@ -29,7 +29,7 @@ let WingBlade = {
 	serve: (handler, opt = {}) => {
 		if (!opt?.onListen) {
 			opt.onListen = function ({port, hostname}) {
-				console.error(`Serving at http://${hostname}:${port}`);
+				console.error(`WingBlade serving at http://${hostname}:${port}`);
 			};
 		};
 		if (!opt?.hostname) {

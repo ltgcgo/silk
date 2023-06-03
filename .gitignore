@@ -5,6 +5,6 @@ deno.lock
 package-lock.json
 yarn.lock
 /.yarn/*
-/node_modules/*
+/node_modules/
 /proxy/
-/src/vendor/*
+/src/vendor/
