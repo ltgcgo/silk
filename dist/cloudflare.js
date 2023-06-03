@@ -1,1 +1,428 @@
-"use strict";(()=>{var h=class{#e={onclose:[],onerror:[],onmessage:[],onopen:[],close(){},readyState:0,isDummy:!0};#n="";#a=async function(e){let t=this,r=AbortSignal.timeout(5e3),n,s=function(){let o=new Error("Bad WebSocket handshake");t.#e?.onerror?.forEach(function(l){l[0](o)}),t.#e?.onclose?.forEach(function(l){l[0]()})};r.addEventListener("abort",function(){(!n||n?.readyState!=1)&&s()}),n=await fetch(e,{headers:{Upgrade:"websocket"}});let i=n.webSocket;i?(this.#e.onclose.forEach(function(o){i.addEventListener("close",...o)}),this.#e.onerror.forEach(function(o){i.addEventListener("error",...o)}),this.#e.onmessage.forEach(function(o){i.addEventListener("message",...o)}),this.#e.onopen.forEach(function(o){i.addEventListener("open",...o)}),i.addEventListener("error",function(){i.close()}),i.accept(),this.#e=i):s()};addEventListener(...e){this.#e.isDummy?this.#e[`on${e[0]}`].push(e.slice(1)):this.#e?.addEventListener(...e)}close(...e){this.#e.close(...e)}send(...e){this.#e?.send(...e)}get url(){return this.#n}get readyState(){return this.#e.readyState}constructor(e){let t=e;e.indexOf("ws")==0&&(t=e.replace("ws","http")),this.#n=t,this.#a(t)}};var v={args:[],os:"linux",variant:"Cloudflare",version:"v1.0.0",persist:!0,exit:(e=0)=>{throw new Error(`WingBlade attempted exitting with code ${e}.`)},getEnv:(e,t)=>self[e]||t,memUsed:()=>0,randomInt:e=>Math.floor(Math.random()*e),readFile:async function(e,t){throw new Error("File reads are not permitted on this platform.")},serve:(e,t={})=>{self.addEventListener("fetch",async function(r){let n=r.request,s=n.headers.get("cf-connecting-ip");r.respondWith(e(n))}),console.error("WingBlade serving at (Wrangler Dev Server)")},setEnv:(e,t)=>{self[e]=t},sleep:function(e,t=0){return new Promise((r,n)=>{setTimeout(r,e+Math.floor(t*Math.random()))})},upgradeWebSocket:e=>{let[t,r]=Object.values(new WebSocketPair);r.accept();let n=r.addEventListener;return Object.defineProperty(r,"addEventListener",{value:function(s,...i){s=="open"?i[0].call(r):n.call(r,s,...i)}}),{socket:r,response:new Response(null,{status:101,webSocket:t})}},writeFile:async function(e,t,r={}){throw new Error("File writes are not permitted on this platform.")}};var T="currentTarget,explicitOriginalTarget,originalTarget,srcElement,target".split(",");var w={account:"user",application:"app",content:"text",created_at:"atNew",edited_at:"atEdit",favourites_count:"sumFav",in_reply_to_account_id:"replyUser",in_reply_to_id:"replyPost",language:"lang",media_attachments:"media",mentions:"ats",reblog:"boost",reblogs_count:"sumBoost",replies_count:"sumReply",sensitive:"cwReal",spoiler_text:"cwText",visibility:"access",followers_count:"sumFan",following_count:"sumSub",display_name:"dispName",avatar_static:"avatarStatic",header_static:"headerStatic",statuses_count:"sumPost",last_status_at:"atLastPost",noindex:"noIndex",verified_at:"atVerify",shortcode:"code",static_url:"static",visible_in_picker:"inPicker",expires_at:"atExpire",votes_count:"sumVote",voters_count:"sumVoter",website:"site",preview_url:"preview",remote_url:"remote",preview_remote_url:"previewRemote",text_url:"text",description:"alt"},S={update:"postNew","status.update":"postEdit",delete:"postDel"},_=class extends EventTarget{#e=40;#n=80;#a=2592e5;#l="";#c="";#u;#i=[];#o={};#f=[];#p=[];#E=[];#t=[];#r={};USER_NORMAL=0;USER_NOEXEMPT=1;USER_EXCLUDED=2;#d(e,t){return(t.atNew||0)-(e.atNew||0)}#v(){}#m(){}#g(){}#s(e){for(let t in e)w[t]&&(e[w[t]]=e[t],delete e[t]);return e.atNew&&(e.atNew=new Date(e.atNew).getTime()),e.atEdit&&(e.atEdit=new Date(e.atEdit).getTime()),e.atVerify&&(e.atVerify=new Date(e.atVerify).getTime()),e.atExpire&&(e.atExpire=new Date(e.atExpire).getTime()),e.app&&this.#s(e.app),e.user&&this.#s(e.user),e.media?.forEach(t=>{this.#s(t)}),e.emojis?.forEach(t=>{this.#s(t)}),e.ats?.forEach(t=>{this.#s(t)}),e.user&&e.user.fields?.forEach(t=>{this.#s(t)}),e.poll&&(e.poll.options?.forEach(t=>{this.#s(t)}),this.#s(e.poll)),e}#h(e,t){return this.#s(e),e?.user?.username&&(e.handle=`@${e.user.username}@${t.domain}`),e.rid=`${e.id}@${t.domain}`,e}receiver(e,t){let r,n=!0;switch(t.event){case"update":case"status.update":{let s=t.payload.constructor==String?JSON.parse(t.payload):t.payload;if(this.#h(s,e),this.#r[s.rid]){let i=this.#t.indexOf(this.#r[s.rid]);i>-1?(this.#t[i]=s,this.#r[s.rid]=s,console.error(`MODIFY Post ${s.rid} success.`)):console.error(`MODIFY Post ${s.rid} not found in postStore.`)}else console.error(`MODIFY Post ${s.rid} not found in postRef. Creating.`),this.#t.unshift(s),this.#r[s.rid]=s,console.error(`CREATE Post ${s.rid} success.`);r=s;break}case"delete":{let s=`${t.payload}@${e.domain}`;if(this.#r[s]){let i=this.#t.indexOf(this.#r[s]);i>-1?(this.#t.splice(i,1),console.error(`DELETE Post ${s} success.`)):console.error(`DELETE Post ${s} not found in postStore.`)}else console.error(`DELETE Post ${s} not found in postRef.`);r=t.payload;break}default:console.error(`Unknown message type ${t.event}.`),console.error(t)}this.#t.sort(this.#d),this.#t.length>this.#n&&this.#t.splice(this.#n,this.#t.length-this.#n).forEach(s=>{delete this.#r[s.rid]}),n?this.dispatchEvent(new MessageEvent(S[t.event]||t.event,{data:r})):console.error("Event dispatch aborted.")}getPosts(){return this.#t}startFor(e){e.ws=new h(`wss://${e.domain}/api/v1/streaming/`),e.ws.addEventListener("open",()=>{e.ws.send('{"type":"subscribe","stream":"public:local"}'),e.domain==this.#l&&e.ws.send(`{"type":"subscribe","stream":"user","access_token":"${this.#c}"}`)}),e.ws.addEventListener("message",t=>{let r=JSON.parse(t.data);this.receiver.call(this,e,r)}),e.ws.addEventListener("close",()=>{AbortSignal.timeout(3e3).onabort=()=>{this.startFor(e)}}),console.info(`Started for ${e.domain}.`)}launch(e){this.#i.forEach(async t=>{if(console.info(`Starting for ${t.domain}.`),this.startFor.call(this,t),!e){let r={headers:{}};t.auth&&(r.headers.Authorization=`Bearer ${t.auth}`);let n=await fetch(`https://${t.domain}/api/v1/timelines/public?local=true&only_media=false&limit=${this.#e}`);n.status==200?(await n.json())?.forEach(s=>{this.receiver(t,{event:"update",payload:s})}):console.error(`Post fetching for ${t.domain} failed: ${n.status} ${n.statusText}`)}})}constructor({servers:e,serversCw:t,instance:r,accessToken:n,serversTk:s,streamOnly:i=!1}){super(),e?.forEach(o=>{let l={domain:o,ws:void 0,cw:!1};this.#o[o]=this.#i.length,this.#i.push(l)}),t?.forEach(o=>{let l={domain:o,ws:void 0,cw:!0};this.#o[o]=this.#i.length,this.#i.push(l)}),s?.forEach(o=>{this.#i[this.#o[o[0]]].auth=o[1]}),this.#l=r,this.#c=n,this.launch(i)}};var u=new TextEncoder("utf-8"),y=async function(e){let t=`Silk@${WingBlade.variant}`;switch(e[0]||"serve"){case"login":{let r=e[1];r||(console.error("Target instance not defined!"),WingBlade.exit(1)),console.error(`Trying to log into ${r}.`),console.error("Obtaining app token...");let n=new FormData;n.set("client_name","Lightingale Silk"),n.set("redirect_uris","http://127.0.0.1:19810/"),n.set("website","https://mlp.ltgc.cc/silk/");let s=await(await fetch(`https://${r}/api/v1/apps`,{method:"post",body:n})).json();console.error(`Registered Silk as app ${s.id}.`),console.info(`Client ID: ${s.client_id}`),console.info(`Client Secret: ${s.client_secret}`),WingBlade.serve(async()=>(WingBlade.sleep(1e3).then(()=>{console.error("Login success."),WingBlade.exit(0)}),new Response("OK")),{onListen:()=>{console.error(`Open https://${r}/oauth/authorize?response_type=code&client_id=${s.client_id}&redirect_uri=${encodeURIComponent("http://127.0.0.1:19810/")}`)},port:19810});break}case"serve":{let r=WingBlade.getEnv("LIST_SERVER")?.split(",")||[],n=WingBlade.getEnv("LIST_SERVER_CW")?.split(",")||[],s=WingBlade.getEnv("LIST_SERVER_TK")?.split(",")||[],i=WingBlade.getEnv("HOOK_SERVER"),o=WingBlade.getEnv("HOOK_AUTH"),l=WingBlade.getEnv("NO_BATCH_REQUEST")||WingBlade.variant=="Cloudflare";i||(console.error("Hook server not defined!"),WingBlade.exit(1)),o||(console.error("Hook server not logged in!"),WingBlade.exit(1)),s.forEach((a,c,d)=>{let E=a.indexOf("=");E>-1&&(d[c]=[a.slice(0,E),a.slice(E+1)])});let m={servers:r,serversCw:n,serversTk:s,instance:i,accessToken:o,streamOnly:l};console.info(m);let f=new _(m),g=u.encode("[]"),p=[];f.addEventListener("postNew",async({data:a})=>{let c=u.encode(`{"event":"set","data":${JSON.stringify(a)}}`);p.forEach(async d=>{d.send()}),g=u.encode(JSON.stringify(f.getPosts()))}),f.addEventListener("postEdit",async({data:a})=>{let c=u.encode(`{"event":"set","data":${JSON.stringify(a)}}`);p.forEach(async d=>{d.send()})}),f.addEventListener("postDel",async({data:a})=>{let c=u.encode(`{"event":"delete","data":${JSON.stringify(a)}}`);p.forEach(async d=>{d.send()})}),WingBlade.serve(a=>{let c=new URL(a.url);switch(a.method?.toLowerCase()){case"get":{switch(c.pathname){case"/nr/silk/timeline":case"/nr/silk/timeline/":return new Response(g,{status:200,headers:{"content-type":"application/json",server:t}});case"/rt/silk/timeline":case"/rt/silk/timeline/":return a.headers.get("upgrade")=="websocket"?new Response("WebSocket isn't supported yet.",{status:400,server:t}):new Response("SSE isn't supported yet.",{status:400,server:t});default:return new Response(`Endpoint ${c.pathname} not found.`,{status:404,server:t})}break}default:return new Response("Method disallowed.",{status:405,server:t})}});break}default:console.error(`Unknown subcommand "${e.join(" ")}"`)}};self.WingBlade=v;y(v.args);})();
+"use strict";
+(() => {
+  // src/cloudflare/inject.js
+  var WebSocket = class {
+    #target = {
+      onclose: [],
+      onerror: [],
+      onmessage: [],
+      onopen: [],
+      close() {
+      },
+      readyState: 0,
+      isDummy: !0
+    };
+    #url = "";
+    #getWsObj = async function(url) {
+      let upThis = this, timeout = AbortSignal.timeout(5e3), reply, failure = function() {
+        let error = new Error("Bad WebSocket handshake");
+        upThis.#target?.onerror?.forEach(function(e) {
+          e[0](error);
+        }), upThis.#target?.onclose?.forEach(function(e) {
+          e[0]();
+        });
+      };
+      timeout.addEventListener("abort", function() {
+        (!reply || reply?.readyState != 1) && failure();
+      }), reply = await fetch(url, {
+        headers: {
+          Upgrade: "websocket"
+        }
+      });
+      let handle = reply.webSocket;
+      handle ? (this.#target.onclose.forEach(function(e) {
+        handle.addEventListener("close", ...e);
+      }), this.#target.onerror.forEach(function(e) {
+        handle.addEventListener("error", ...e);
+      }), this.#target.onmessage.forEach(function(e) {
+        handle.addEventListener("message", ...e);
+      }), this.#target.onopen.forEach(function(e) {
+        handle.addEventListener("open", ...e);
+      }), handle.addEventListener("error", function() {
+        handle.close();
+      }), handle.accept(), this.#target = handle) : failure();
+    };
+    addEventListener(...args) {
+      this.#target.isDummy ? this.#target[`on${args[0]}`].push(args.slice(1)) : this.#target?.addEventListener(...args);
+    }
+    close(...args) {
+      this.#target.close(...args);
+    }
+    send(...args) {
+      this.#target?.send(...args);
+    }
+    get url() {
+      return this.#url;
+    }
+    get readyState() {
+      return this.#target.readyState;
+    }
+    constructor(url) {
+      let wsTarget = url;
+      url.indexOf("ws") == 0 && (wsTarget = url.replace("ws", "http")), this.#url = wsTarget, this.#getWsObj(wsTarget);
+    }
+  };
+
+  // src/cloudflare/wingblade.js
+  var WingBlade2 = {
+    args: [],
+    os: "linux",
+    variant: "Cloudflare",
+    version: "v1.0.0",
+    persist: !0,
+    exit: (code = 0) => {
+      throw new Error(`WingBlade attempted exitting with code ${code}.`);
+    },
+    getEnv: (key, fallbackValue) => self[key] || fallbackValue,
+    memUsed: () => 0,
+    randomInt: (cap) => Math.floor(Math.random() * cap),
+    readFile: async function(path, opt) {
+      throw new Error("File reads are not permitted on this platform.");
+    },
+    serve: (handler, opt = {}) => {
+      globalThis.addEventListener("fetch", async function(event) {
+        let request = event.request, clientInfo = request.headers.get("cf-connecting-ip");
+        event.respondWith(handler(request));
+      }), console.error("WingBlade serving at (Wrangler Dev Server)");
+    },
+    setEnv: (key, value) => {
+      self[key] = value;
+    },
+    sleep: function(ms, maxAdd = 0) {
+      return new Promise((y, n) => {
+        setTimeout(y, ms + Math.floor(maxAdd * Math.random()));
+      });
+    },
+    upgradeWebSocket: (req) => {
+      let [client, socket] = Object.values(new WebSocketPair());
+      socket.accept();
+      let addEL = socket.addEventListener;
+      return Object.defineProperty(socket, "addEventListener", { value: function(type, ...args) {
+        type == "open" ? args[0].call(socket) : addEL.call(socket, type, ...args);
+      } }), {
+        socket,
+        response: new Response(null, {
+          status: 101,
+          webSocket: client
+        })
+      };
+    },
+    writeFile: async function(path, data, opt = {}) {
+      throw new Error("File writes are not permitted on this platform.");
+    }
+  };
+
+  // src/mastodon/index.mjs
+  var shapeshiftProps = "currentTarget,explicitOriginalTarget,originalTarget,srcElement,target".split(",");
+  var renameMap = {
+    // Post
+    account: "user",
+    application: "app",
+    content: "text",
+    created_at: "atNew",
+    // Unix TS
+    edited_at: "atEdit",
+    // Unix TS
+    favourites_count: "sumFav",
+    in_reply_to_account_id: "replyUser",
+    in_reply_to_id: "replyPost",
+    language: "lang",
+    media_attachments: "media",
+    mentions: "ats",
+    reblog: "boost",
+    reblogs_count: "sumBoost",
+    replies_count: "sumReply",
+    sensitive: "cwReal",
+    spoiler_text: "cwText",
+    visibility: "access",
+    // User
+    followers_count: "sumFan",
+    following_count: "sumSub",
+    display_name: "dispName",
+    avatar_static: "avatarStatic",
+    header_static: "headerStatic",
+    statuses_count: "sumPost",
+    last_status_at: "atLastPost",
+    noindex: "noIndex",
+    verified_at: "atVerify",
+    // Unix TS
+    // Emoji
+    shortcode: "code",
+    static_url: "static",
+    visible_in_picker: "inPicker",
+    // Poll
+    expires_at: "atExpire",
+    // Unix TS
+    votes_count: "sumVote",
+    voters_count: "sumVoter",
+    // App
+    website: "site",
+    // Media
+    preview_url: "preview",
+    remote_url: "remote",
+    preview_remote_url: "previewRemote",
+    text_url: "text",
+    description: "alt"
+  }, eventRemap = {
+    update: "postNew",
+    "status.update": "postEdit",
+    delete: "postDel"
+  }, postGrab = {
+    maxAge: 2592e5,
+    // Posts are discarded if longer than 3 days
+    maxCount: 100,
+    // Grabs 100 post at most from each instance
+    pageSize: 40
+    // Grabs this many post in each batch query attempt
+  }, MastodonClient = class extends EventTarget {
+    #limitTotal = 100;
+    // How many posts should be tracked
+    #expiry = 2592e5;
+    // Max TTL for 3 days
+    #hookInstance = "";
+    #hookClient;
+    #servers = [];
+    #svrRef = {};
+    #userMuted = [];
+    #userBanned = [];
+    #userTracked = [];
+    #postStore = [];
+    #postRef = {};
+    // Refer to posts by ID (id@server)
+    #launched = !1;
+    USER_NORMAL = 0;
+    USER_NOEXEMPT = 1;
+    USER_EXCLUDED = 2;
+    filePath = "";
+    #sorter(a, b) {
+      return (b.atNew || 0) - (a.atNew || 0);
+    }
+    #addPost() {
+    }
+    #modPost() {
+    }
+    #delPost() {
+    }
+    #normalizer(post) {
+      for (let key in post)
+        renameMap[key] && (post[renameMap[key]] = post[key], delete post[key]);
+      return post.atNew && (post.atNew = new Date(post.atNew).getTime()), post.atEdit && (post.atEdit = new Date(post.atEdit).getTime()), post.atVerify && (post.atVerify = new Date(post.atVerify).getTime()), post.atExpire && (post.atExpire = new Date(post.atExpire).getTime()), post.app && this.#normalizer(post.app), post.user && this.#normalizer(post.user), post.media?.forEach((e) => {
+        this.#normalizer(e);
+      }), post.emojis?.forEach((e) => {
+        this.#normalizer(e);
+      }), post.ats?.forEach((e) => {
+        this.#normalizer(e);
+      }), post.user && post.user.fields?.forEach((e) => {
+        this.#normalizer(e);
+      }), post.poll && (post.poll.options?.forEach((e) => {
+        this.#normalizer(e);
+      }), this.#normalizer(post.poll)), post;
+    }
+    #dataProcessor(data, server) {
+      return this.#normalizer(data), data?.user?.username && (data.handle = `@${data.user.username}@${server.domain}`), data.rid = `${data.id}@${server.domain}`, data;
+    }
+    receiver(server, msg) {
+      let targetData, dispatchEvent = !0, timeNow = Date.now(), timeLimit = timeNow - postGrab.maxAge;
+      switch (msg.event) {
+        case "update":
+        case "status.update": {
+          let data = msg.payload.constructor == String ? JSON.parse(msg.payload) : msg.payload;
+          if (this.#dataProcessor(data, server), data.atNew < timeLimit) {
+            dispatchEvent = !1;
+            break;
+          }
+          if (this.#postRef[data.rid]) {
+            let pidx = this.#postStore.indexOf(this.#postRef[data.rid]);
+            pidx > -1 && (this.#postStore[pidx] = data, this.#postRef[data.rid] = data, console.debug(`MODIFY Post ${data.rid} success.`));
+          } else
+            this.#postStore.unshift(data), this.#postRef[data.rid] = data, console.debug(`CREATE Post ${data.rid} success.`);
+          targetData = data;
+          break;
+        }
+        case "delete": {
+          let rid = `${msg.payload}@${server.domain}`;
+          if (this.#postRef[rid]) {
+            let pidx = this.#postStore.indexOf(this.#postRef[rid]);
+            pidx > -1 ? (this.#postStore.splice(pidx, 1), console.debug(`DELETE Post ${rid} success (${pidx}).`)) : console.warn(`DELETE Post ${rid} not found in postStore.`);
+          } else
+            console.warn(`DELETE Post ${rid} not found in postRef.`);
+          targetData = msg.payload;
+          break;
+        }
+        default:
+          console.error(`Unknown message type ${msg.event} from ${server.domain}.`), console.error(msg);
+      }
+      this.#postStore.sort(this.#sorter), this.#postStore.length > this.#limitTotal && this.#postStore.splice(this.#limitTotal, this.#postStore.length - this.#limitTotal).forEach((e) => {
+        delete this.#postRef[e.rid];
+      }), dispatchEvent && this.dispatchEvent(new MessageEvent(eventRemap[msg.event] || msg.event, { data: targetData }));
+    }
+    //addServer() {};
+    getPosts() {
+      return this.#postStore;
+    }
+    getServers() {
+      return this.#servers;
+    }
+    startFor(e) {
+      e.ws = new WebSocket(`wss://${e.domain}/api/v1/streaming/`), e.ws.addEventListener("open", () => {
+        e.auth ? (e.ws.send(`{"type":"subscribe","stream":"public:local","access_token":"${e.auth || ""}"}}`), console.info(`Authenticated local timeline started for ${e.domain}.`)) : (e.ws.send('{"type":"subscribe","stream":"public:local"}'), console.info(`Local timeline started for ${e.domain}.`)), e.hook && (e.ws.send(`{"type":"subscribe","stream":"user","access_token":"${e.auth || ""}"}`), console.info(`User stream started for ${e.domain}.`));
+      }), e.ws.addEventListener("message", (ev) => {
+        let data = JSON.parse(ev.data);
+        this.receiver.call(this, e, data);
+      }), e.ws.addEventListener("close", () => {
+        AbortSignal.timeout(3e3).onabort = () => {
+          this.startFor(e);
+        };
+      });
+    }
+    launch(streamOnly) {
+      this.#launched || (this.#servers.forEach(async (e) => {
+        if (console.info(`Starting for ${e.domain}.`), this.startFor.call(this, e), !streamOnly) {
+          let opt = {
+            headers: {}
+          };
+          e.auth && (opt.headers.Authorization = `Bearer ${e.auth}`);
+          let request = await fetch(`https://${e.domain}/api/v1/timelines/public?local=true&only_media=false&limit=${postGrab.pageSize}`, opt);
+          request.status == 200 ? (await request.json())?.forEach((payload) => {
+            this.receiver(e, {
+              event: "update",
+              payload
+            });
+          }) : console.error(`Post fetching for ${e.domain} failed: ${request.status} ${request.statusText}`);
+        }
+      }), this.#launched = !0);
+    }
+    constructor({ servers, serversCw, instance, serversTk, streamOnly = !1, filePath = "./auth.json" }) {
+      super(), servers?.forEach((e) => {
+        let server = {
+          domain: e,
+          ws: void 0,
+          cw: !1,
+          hook: e == instance,
+          auth: !1
+        };
+        this.#svrRef[e] = this.#servers.length, this.#servers.push(server);
+      }), serversCw?.forEach((e) => {
+        let server = {
+          domain: e,
+          ws: void 0,
+          cw: !0,
+          hook: e == instance,
+          auth: !1
+        };
+        this.#svrRef[e] = this.#servers.length, this.#servers.push(server);
+      }), serversTk?.forEach((e) => {
+        this.#servers[this.#svrRef[e[0]]].auth = !0;
+      }), this.#hookInstance = instance, this.launch(streamOnly);
+    }
+  };
+
+  // src/core/index.js
+  var utf8Enc = new TextEncoder("utf-8"), main = async function(args) {
+    let serverImpl = `Silk@${WingBlade.variant}`;
+    switch (console.debug(`${serverImpl} - Better Together`), args[0] || "serve") {
+      case "login": {
+        console.error("Deprecated."), WingBlade.exit(0);
+        break;
+      }
+      case "serve": {
+        console.error("Starting the Silk server!");
+        let listServers = WingBlade.getEnv("LIST_SERVER")?.split(",") || [], listServersCw = WingBlade.getEnv("LIST_SERVER_CW")?.split(",") || [], listServersTk = WingBlade.getEnv("LIST_SERVER_TK")?.split(",") || [], hookServer = WingBlade.getEnv("HOOK_SERVER"), streamOnly = WingBlade.getEnv("NO_BATCH_REQUEST", "0") == "1";
+        hookServer || console.error("Hook server not defined!"), listServersTk.forEach((e, i, a) => {
+          let splitAt = e.indexOf("=");
+          splitAt > -1 && (a[i] = [e.slice(0, splitAt), e.slice(splitAt + 1)]);
+        });
+        let mastoConf = {
+          servers: listServers,
+          serversCw: listServersCw,
+          serversTk: listServersTk,
+          instance: hookServer,
+          streamOnly
+        };
+        console.info(mastoConf);
+        let mastoClient = new MastodonClient(mastoConf), batchCache = utf8Enc.encode("[]"), activeClients = [];
+        mastoClient.addEventListener("postNew", async ({ data }) => {
+          let runCache = `{"event":"set","data":${JSON.stringify(data)}}`;
+          activeClients.forEach(async (e) => {
+            e.send(runCache);
+          }), batchCache = utf8Enc.encode(JSON.stringify(mastoClient.getPosts()));
+        }), mastoClient.addEventListener("postEdit", async ({ data }) => {
+          let runCache = `{"event":"set","data":${JSON.stringify(data)}}`;
+          activeClients.forEach(async (e) => {
+            e.send(runCache);
+          }), batchCache = utf8Enc.encode(JSON.stringify(mastoClient.getPosts()));
+        }), mastoClient.addEventListener("postDel", async ({ data }) => {
+          let runCache = `{"event":"set","data":${JSON.stringify(data)}}`;
+          activeClients.forEach(async (e) => {
+            e.send(runCache);
+          }), batchCache = utf8Enc.encode(JSON.stringify(mastoClient.getPosts()));
+        }), WingBlade.serve((request) => {
+          let url = new URL(request.url);
+          switch (request.method?.toLowerCase()) {
+            case "get": {
+              switch (url.pathname) {
+                case "/nr/silk/servers": {
+                  let det = [];
+                  return mastoClient.getServers().forEach(({ domain, cw, ws }) => {
+                    det.push({ domain, cw, active: ws.readyState == 1 });
+                  }), new Response(JSON.stringify(det), {
+                    status: 200,
+                    headers: {
+                      "content-type": "application/json",
+                      server: serverImpl
+                    }
+                  });
+                  break;
+                }
+                case "/nr/silk/timeline":
+                case "/nr/silk/timeline/":
+                  return new Response(batchCache, {
+                    status: 200,
+                    headers: {
+                      "content-type": "application/json",
+                      server: serverImpl
+                    }
+                  });
+                case "/rt/silk/timeline":
+                case "/rt/silk/timeline/": {
+                  if (request.headers.get("upgrade") == "websocket") {
+                    let { socket, response } = WingBlade.upgradeWebSocket(request);
+                    return socket.addEventListener("open", () => {
+                      socket.send('{"event":"ack"}'), activeClients.push(socket);
+                    }), socket.addEventListener("close", () => {
+                      let index = activeClients.indexOf(socket);
+                      index > -1 && activeClients.splice(index, 1);
+                    }), response;
+                  } else
+                    return new Response("SSE isn't supported yet.", {
+                      status: 400,
+                      server: serverImpl
+                    });
+                  break;
+                }
+                default:
+                  return new Response(`Endpoint ${url.pathname} not found.`, {
+                    status: 404,
+                    server: serverImpl
+                  });
+              }
+              break;
+            }
+            default:
+              return new Response("Method disallowed.", {
+                status: 405,
+                server: serverImpl
+              });
+          }
+        });
+        break;
+      }
+      default:
+        console.error(`Unknown subcommand "${args.join(" ")}"`);
+    }
+  };
+
+  // src/cloudflare/index.js
+  self.WingBlade = WingBlade2;
+  main(WingBlade2.args);
+})();

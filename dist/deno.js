@@ -1,1 +1,600 @@
-"use strict";(()=>{function y(){let t,e="pending",r=new Promise((n,s)=>{t={async resolve(i){await i,e="fulfilled",n(i)},reject(i){e="rejected",s(i)}}});return Object.defineProperty(r,"state",{get:()=>e}),Object.assign(r,t)}function T(t,e={}){let{signal:r,persistent:n}=e;return r?.aborted?Promise.reject(new DOMException("Delay was aborted.","AbortError")):new Promise((s,i)=>{let o=()=>{clearTimeout(u),i(new DOMException("Delay was aborted.","AbortError"))},u=setTimeout(()=>{r?.removeEventListener("abort",o),s()},t);if(r?.addEventListener("abort",o,{once:!0}),n===!1)try{Deno.unrefTimer(u)}catch(c){if(!(c instanceof ReferenceError))throw c;console.error("`persistent` option is only available in Deno")}})}var b=class{#i=0;#r=[];#l=[];#e=y();add(e){++this.#i,this.#s(e[Symbol.asyncIterator]())}async#s(e){try{let{value:r,done:n}=await e.next();n?--this.#i:this.#r.push({iterator:e,value:r})}catch(r){this.#l.push(r)}this.#e.resolve()}async*iterate(){for(;this.#i>0;){await this.#e;for(let e=0;e<this.#r.length;e++){let{iterator:r,value:n}=this.#r[e];yield n,this.#s(r)}if(this.#l.length){for(let e of this.#l)throw e;this.#l.length=0}this.#r.length=0,this.#e=y()}}[Symbol.asyncIterator](){return this.iterate()}},p="Server closed",L=5,$=1e3,E=class{#i;#r;#l;#e=!1;#s=new Set;#d=new AbortController;#n=new Set;#c;constructor(e){this.#i=e.port,this.#r=e.hostname,this.#l=e.handler,this.#c=e.onError??function(r){return console.error(r),new Response("Internal Server Error",{status:500})}}async serve(e){if(this.#e)throw new Deno.errors.Http(p);this.#o(e);try{return await this.#p(e)}finally{this.#h(e);try{e.close()}catch{}}}async listenAndServe(){if(this.#e)throw new Deno.errors.Http(p);let e=Deno.listen({port:this.#i??80,hostname:this.#r??"0.0.0.0",transport:"tcp"});return await this.serve(e)}async listenAndServeTls(e,r){if(this.#e)throw new Deno.errors.Http(p);let n=Deno.listenTls({port:this.#i??443,hostname:this.#r??"0.0.0.0",certFile:e,keyFile:r,transport:"tcp"});return await this.serve(n)}close(){if(this.#e)throw new Deno.errors.Http(p);this.#e=!0;for(let e of this.#s)try{e.close()}catch{}this.#s.clear(),this.#d.abort();for(let e of this.#n)this.#t(e);this.#n.clear()}get closed(){return this.#e}get addrs(){return Array.from(this.#s).map(e=>e.addr)}async#u(e,r){let n;try{if(n=await this.#l(e.request,r),n.bodyUsed&&n.body!==null)throw new TypeError("Response body already consumed.")}catch(s){n=await this.#c(s)}try{await e.respondWith(n)}catch{}}async#f(e,r){for(;!this.#e;){let n;try{n=await e.nextRequest()}catch{break}if(n===null)break;this.#u(n,r)}this.#t(e)}async#p(e){let r;for(;!this.#e;){let n;try{n=await e.accept()}catch(o){if(o instanceof Deno.errors.BadResource||o instanceof Deno.errors.InvalidData||o instanceof Deno.errors.UnexpectedEof||o instanceof Deno.errors.ConnectionReset||o instanceof Deno.errors.NotConnected){r?r*=2:r=L,r>=1e3&&(r=$);try{await T(r,{signal:this.#d.signal})}catch(l){if(!(l instanceof DOMException&&l.name==="AbortError"))throw l}continue}throw o}r=void 0;let s;try{s=Deno.serveHttp(n)}catch{continue}this.#w(s);let i={localAddr:n.localAddr,remoteAddr:n.remoteAddr};this.#f(s,i)}}#t(e){this.#v(e);try{e.close()}catch{}}#o(e){this.#s.add(e)}#h(e){this.#s.delete(e)}#w(e){this.#n.add(e)}#v(e){this.#n.delete(e)}};function x(t){return t==="0.0.0.0"?"localhost":t}async function _(t,e={}){let r=e.port??8e3,n=e.hostname??"0.0.0.0",s=new E({port:r,hostname:n,handler:t,onError:e.onError});e?.signal?.addEventListener("abort",()=>s.close(),{once:!0});let i=s.listenAndServe();return r=s.addrs[0].port,"onListen"in e?e.onListen?.({port:r,hostname:n}):console.log(`Listening on http://${x(n)}:${r}/`),await i}var m={args:Deno.args,os:Deno.build.os,variant:"Deno",version:Deno.version.deno,persist:!0,exit:(t=0)=>{Deno.exit(t)},getEnv:(t,e)=>Deno.env.get(t)||e,memUsed:()=>Deno.memoryUsage(),randomInt:t=>Math.floor(Math.random()*t),readFile:async function(t,e){return await Deno.readFile(t,e)},serve:(t,e={})=>(e?.onListen||(e.onListen=function({port:r,hostname:n}){console.error(`WingBlade serving at http://${n}:${r}`)}),e?.hostname||(e.hostname="127.0.0.1"),e?.port||(e.port=8e3),_(t,e)),setEnv:(t,e)=>Deno.env.set(t,e),sleep:function(t,e=0){return new Promise((r,n)=>{AbortSignal.timeout(t+Math.floor(e*Math.random())).addEventListener("abort",()=>{r()})})},upgradeWebSocket(t,e){return Deno.upgradeWebSocket(t,e)},writeFile:async function(t,e,r){await Deno.writeFile(t,e,r)}};var B="currentTarget,explicitOriginalTarget,originalTarget,srcElement,target".split(",");var D={account:"user",application:"app",content:"text",created_at:"atNew",edited_at:"atEdit",favourites_count:"sumFav",in_reply_to_account_id:"replyUser",in_reply_to_id:"replyPost",language:"lang",media_attachments:"media",mentions:"ats",reblog:"boost",reblogs_count:"sumBoost",replies_count:"sumReply",sensitive:"cwReal",spoiler_text:"cwText",visibility:"access",followers_count:"sumFan",following_count:"sumSub",display_name:"dispName",avatar_static:"avatarStatic",header_static:"headerStatic",statuses_count:"sumPost",last_status_at:"atLastPost",noindex:"noIndex",verified_at:"atVerify",shortcode:"code",static_url:"static",visible_in_picker:"inPicker",expires_at:"atExpire",votes_count:"sumVote",voters_count:"sumVoter",website:"site",preview_url:"preview",remote_url:"remote",preview_remote_url:"previewRemote",text_url:"text",description:"alt"},R={update:"postNew","status.update":"postEdit",delete:"postDel"},S=class extends EventTarget{#i=40;#r=80;#l=2592e5;#e="";#s="";#d;#n=[];#c={};#u=[];#f=[];#p=[];#t=[];#o={};USER_NORMAL=0;USER_NOEXEMPT=1;USER_EXCLUDED=2;#h(t,e){return(e.atNew||0)-(t.atNew||0)}#w(){}#v(){}#m(){}#a(t){for(let e in t)D[e]&&(t[D[e]]=t[e],delete t[e]);return t.atNew&&(t.atNew=new Date(t.atNew).getTime()),t.atEdit&&(t.atEdit=new Date(t.atEdit).getTime()),t.atVerify&&(t.atVerify=new Date(t.atVerify).getTime()),t.atExpire&&(t.atExpire=new Date(t.atExpire).getTime()),t.app&&this.#a(t.app),t.user&&this.#a(t.user),t.media?.forEach(e=>{this.#a(e)}),t.emojis?.forEach(e=>{this.#a(e)}),t.ats?.forEach(e=>{this.#a(e)}),t.user&&t.user.fields?.forEach(e=>{this.#a(e)}),t.poll&&(t.poll.options?.forEach(e=>{this.#a(e)}),this.#a(t.poll)),t}#E(t,e){return this.#a(t),t?.user?.username&&(t.handle=`@${t.user.username}@${e.domain}`),t.rid=`${t.id}@${e.domain}`,t}receiver(t,e){let r,n=!0;switch(e.event){case"update":case"status.update":{let s=e.payload.constructor==String?JSON.parse(e.payload):e.payload;if(this.#E(s,t),this.#o[s.rid]){let i=this.#t.indexOf(this.#o[s.rid]);i>-1?(this.#t[i]=s,this.#o[s.rid]=s,console.error(`MODIFY Post ${s.rid} success.`)):console.error(`MODIFY Post ${s.rid} not found in postStore.`)}else console.error(`MODIFY Post ${s.rid} not found in postRef. Creating.`),this.#t.unshift(s),this.#o[s.rid]=s,console.error(`CREATE Post ${s.rid} success.`);r=s;break}case"delete":{let s=`${e.payload}@${t.domain}`;if(this.#o[s]){let i=this.#t.indexOf(this.#o[s]);i>-1?(this.#t.splice(i,1),console.error(`DELETE Post ${s} success.`)):console.error(`DELETE Post ${s} not found in postStore.`)}else console.error(`DELETE Post ${s} not found in postRef.`);r=e.payload;break}default:console.error(`Unknown message type ${e.event}.`),console.error(e)}this.#t.sort(this.#h),this.#t.length>this.#r&&this.#t.splice(this.#r,this.#t.length-this.#r).forEach(s=>{delete this.#o[s.rid]}),n?this.dispatchEvent(new MessageEvent(R[e.event]||e.event,{data:r})):console.error("Event dispatch aborted.")}getPosts(){return this.#t}startFor(t){t.ws=new WebSocket(`wss://${t.domain}/api/v1/streaming/`),t.ws.addEventListener("open",()=>{t.ws.send('{"type":"subscribe","stream":"public:local"}'),t.domain==this.#e&&t.ws.send(`{"type":"subscribe","stream":"user","access_token":"${this.#s}"}`)}),t.ws.addEventListener("message",e=>{let r=JSON.parse(e.data);this.receiver.call(this,t,r)}),t.ws.addEventListener("close",()=>{AbortSignal.timeout(3e3).onabort=()=>{this.startFor(t)}}),console.info(`Started for ${t.domain}.`)}launch(t){this.#n.forEach(async e=>{if(console.info(`Starting for ${e.domain}.`),this.startFor.call(this,e),!t){let r={headers:{}};e.auth&&(r.headers.Authorization=`Bearer ${e.auth}`);let n=await fetch(`https://${e.domain}/api/v1/timelines/public?local=true&only_media=false&limit=${this.#i}`);n.status==200?(await n.json())?.forEach(s=>{this.receiver(e,{event:"update",payload:s})}):console.error(`Post fetching for ${e.domain} failed: ${n.status} ${n.statusText}`)}})}constructor({servers:t,serversCw:e,instance:r,accessToken:n,serversTk:s,streamOnly:i=!1}){super(),t?.forEach(o=>{let l={domain:o,ws:void 0,cw:!1};this.#c[o]=this.#n.length,this.#n.push(l)}),e?.forEach(o=>{let l={domain:o,ws:void 0,cw:!0};this.#c[o]=this.#n.length,this.#n.push(l)}),s?.forEach(o=>{this.#n[this.#c[o[0]]].auth=o[1]}),this.#e=r,this.#s=n,this.launch(i)}};var f=new TextEncoder("utf-8"),k=async function(t){let e=`Silk@${WingBlade.variant}`;switch(t[0]||"serve"){case"login":{let r=t[1];r||(console.error("Target instance not defined!"),WingBlade.exit(1)),console.error(`Trying to log into ${r}.`),console.error("Obtaining app token...");let n=new FormData;n.set("client_name","Lightingale Silk"),n.set("redirect_uris","http://127.0.0.1:19810/"),n.set("website","https://mlp.ltgc.cc/silk/");let s=await(await fetch(`https://${r}/api/v1/apps`,{method:"post",body:n})).json();console.error(`Registered Silk as app ${s.id}.`),console.info(`Client ID: ${s.client_id}`),console.info(`Client Secret: ${s.client_secret}`),WingBlade.serve(async()=>(WingBlade.sleep(1e3).then(()=>{console.error("Login success."),WingBlade.exit(0)}),new Response("OK")),{onListen:()=>{console.error(`Open https://${r}/oauth/authorize?response_type=code&client_id=${s.client_id}&redirect_uri=${encodeURIComponent("http://127.0.0.1:19810/")}`)},port:19810});break}case"serve":{let r=WingBlade.getEnv("LIST_SERVER")?.split(",")||[],n=WingBlade.getEnv("LIST_SERVER_CW")?.split(",")||[],s=WingBlade.getEnv("LIST_SERVER_TK")?.split(",")||[],i=WingBlade.getEnv("HOOK_SERVER"),o=WingBlade.getEnv("HOOK_AUTH"),l=WingBlade.getEnv("NO_BATCH_REQUEST")||WingBlade.variant=="Cloudflare";i||(console.error("Hook server not defined!"),WingBlade.exit(1)),o||(console.error("Hook server not logged in!"),WingBlade.exit(1)),s.forEach((a,d,h)=>{let v=a.indexOf("=");v>-1&&(h[d]=[a.slice(0,v),a.slice(v+1)])});let u={servers:r,serversCw:n,serversTk:s,instance:i,accessToken:o,streamOnly:l};console.info(u);let c=new S(u),g=f.encode("[]"),w=[];c.addEventListener("postNew",async({data:a})=>{let d=f.encode(`{"event":"set","data":${JSON.stringify(a)}}`);w.forEach(async h=>{h.send()}),g=f.encode(JSON.stringify(c.getPosts()))}),c.addEventListener("postEdit",async({data:a})=>{let d=f.encode(`{"event":"set","data":${JSON.stringify(a)}}`);w.forEach(async h=>{h.send()})}),c.addEventListener("postDel",async({data:a})=>{let d=f.encode(`{"event":"delete","data":${JSON.stringify(a)}}`);w.forEach(async h=>{h.send()})}),WingBlade.serve(a=>{let d=new URL(a.url);switch(a.method?.toLowerCase()){case"get":{switch(d.pathname){case"/nr/silk/timeline":case"/nr/silk/timeline/":return new Response(g,{status:200,headers:{"content-type":"application/json",server:e}});case"/rt/silk/timeline":case"/rt/silk/timeline/":return a.headers.get("upgrade")=="websocket"?new Response("WebSocket isn't supported yet.",{status:400,server:e}):new Response("SSE isn't supported yet.",{status:400,server:e});default:return new Response(`Endpoint ${d.pathname} not found.`,{status:404,server:e})}break}default:return new Response("Method disallowed.",{status:405,server:e})}});break}default:console.error(`Unknown subcommand "${t.join(" ")}"`)}};self.WingBlade=m;k(m.args);})();
+"use strict";
+(() => {
+  // libs/denoServe/server.js
+  function deferred() {
+    let methods, state = "pending", promise = new Promise((resolve, reject) => {
+      methods = {
+        async resolve(value) {
+          await value, state = "fulfilled", resolve(value);
+        },
+        reject(reason) {
+          state = "rejected", reject(reason);
+        }
+      };
+    });
+    return Object.defineProperty(promise, "state", {
+      get: () => state
+    }), Object.assign(promise, methods);
+  }
+  function delay(ms, options = {}) {
+    let { signal, persistent } = options;
+    return signal?.aborted ? Promise.reject(new DOMException("Delay was aborted.", "AbortError")) : new Promise((resolve, reject) => {
+      let abort = () => {
+        clearTimeout(i), reject(new DOMException("Delay was aborted.", "AbortError"));
+      }, i = setTimeout(() => {
+        signal?.removeEventListener("abort", abort), resolve();
+      }, ms);
+      if (signal?.addEventListener("abort", abort, {
+        once: !0
+      }), persistent === !1)
+        try {
+          Deno.unrefTimer(i);
+        } catch (error) {
+          if (!(error instanceof ReferenceError))
+            throw error;
+          console.error("`persistent` option is only available in Deno");
+        }
+    });
+  }
+  var MuxAsyncIterator = class {
+    #iteratorCount = 0;
+    #yields = [];
+    #throws = [];
+    #signal = deferred();
+    add(iterable) {
+      ++this.#iteratorCount, this.#callIteratorNext(iterable[Symbol.asyncIterator]());
+    }
+    async #callIteratorNext(iterator) {
+      try {
+        let { value, done } = await iterator.next();
+        done ? --this.#iteratorCount : this.#yields.push({
+          iterator,
+          value
+        });
+      } catch (e) {
+        this.#throws.push(e);
+      }
+      this.#signal.resolve();
+    }
+    async *iterate() {
+      for (; this.#iteratorCount > 0; ) {
+        await this.#signal;
+        for (let i = 0; i < this.#yields.length; i++) {
+          let { iterator, value } = this.#yields[i];
+          yield value, this.#callIteratorNext(iterator);
+        }
+        if (this.#throws.length) {
+          for (let e of this.#throws)
+            throw e;
+          this.#throws.length = 0;
+        }
+        this.#yields.length = 0, this.#signal = deferred();
+      }
+    }
+    [Symbol.asyncIterator]() {
+      return this.iterate();
+    }
+  }, ERROR_SERVER_CLOSED = "Server closed", INITIAL_ACCEPT_BACKOFF_DELAY = 5, MAX_ACCEPT_BACKOFF_DELAY = 1e3, Server = class {
+    #port;
+    #host;
+    #handler;
+    #closed = !1;
+    #listeners = /* @__PURE__ */ new Set();
+    #acceptBackoffDelayAbortController = new AbortController();
+    #httpConnections = /* @__PURE__ */ new Set();
+    #onError;
+    constructor(serverInit) {
+      this.#port = serverInit.port, this.#host = serverInit.hostname, this.#handler = serverInit.handler, this.#onError = serverInit.onError ?? function(error) {
+        return console.error(error), new Response("Internal Server Error", {
+          status: 500
+        });
+      };
+    }
+    async serve(listener) {
+      if (this.#closed)
+        throw new Deno.errors.Http(ERROR_SERVER_CLOSED);
+      this.#trackListener(listener);
+      try {
+        return await this.#accept(listener);
+      } finally {
+        this.#untrackListener(listener);
+        try {
+          listener.close();
+        } catch {
+        }
+      }
+    }
+    async listenAndServe() {
+      if (this.#closed)
+        throw new Deno.errors.Http(ERROR_SERVER_CLOSED);
+      let listener = Deno.listen({
+        port: this.#port ?? 80,
+        hostname: this.#host ?? "0.0.0.0",
+        transport: "tcp"
+      });
+      return await this.serve(listener);
+    }
+    async listenAndServeTls(certFile, keyFile) {
+      if (this.#closed)
+        throw new Deno.errors.Http(ERROR_SERVER_CLOSED);
+      let listener = Deno.listenTls({
+        port: this.#port ?? 443,
+        hostname: this.#host ?? "0.0.0.0",
+        certFile,
+        keyFile,
+        transport: "tcp"
+      });
+      return await this.serve(listener);
+    }
+    close() {
+      if (this.#closed)
+        throw new Deno.errors.Http(ERROR_SERVER_CLOSED);
+      this.#closed = !0;
+      for (let listener of this.#listeners)
+        try {
+          listener.close();
+        } catch {
+        }
+      this.#listeners.clear(), this.#acceptBackoffDelayAbortController.abort();
+      for (let httpConn of this.#httpConnections)
+        this.#closeHttpConn(httpConn);
+      this.#httpConnections.clear();
+    }
+    get closed() {
+      return this.#closed;
+    }
+    get addrs() {
+      return Array.from(this.#listeners).map((listener) => listener.addr);
+    }
+    async #respond(requestEvent, connInfo) {
+      let response;
+      try {
+        if (response = await this.#handler(requestEvent.request, connInfo), response.bodyUsed && response.body !== null)
+          throw new TypeError("Response body already consumed.");
+      } catch (error) {
+        response = await this.#onError(error);
+      }
+      try {
+        await requestEvent.respondWith(response);
+      } catch {
+      }
+    }
+    async #serveHttp(httpConn, connInfo1) {
+      for (; !this.#closed; ) {
+        let requestEvent1;
+        try {
+          requestEvent1 = await httpConn.nextRequest();
+        } catch {
+          break;
+        }
+        if (requestEvent1 === null)
+          break;
+        this.#respond(requestEvent1, connInfo1);
+      }
+      this.#closeHttpConn(httpConn);
+    }
+    async #accept(listener) {
+      let acceptBackoffDelay;
+      for (; !this.#closed; ) {
+        let conn;
+        try {
+          conn = await listener.accept();
+        } catch (error1) {
+          if (error1 instanceof Deno.errors.BadResource || error1 instanceof Deno.errors.InvalidData || error1 instanceof Deno.errors.UnexpectedEof || error1 instanceof Deno.errors.ConnectionReset || error1 instanceof Deno.errors.NotConnected) {
+            acceptBackoffDelay ? acceptBackoffDelay *= 2 : acceptBackoffDelay = INITIAL_ACCEPT_BACKOFF_DELAY, acceptBackoffDelay >= 1e3 && (acceptBackoffDelay = MAX_ACCEPT_BACKOFF_DELAY);
+            try {
+              await delay(acceptBackoffDelay, {
+                signal: this.#acceptBackoffDelayAbortController.signal
+              });
+            } catch (err) {
+              if (!(err instanceof DOMException && err.name === "AbortError"))
+                throw err;
+            }
+            continue;
+          }
+          throw error1;
+        }
+        acceptBackoffDelay = void 0;
+        let httpConn1;
+        try {
+          httpConn1 = Deno.serveHttp(conn);
+        } catch {
+          continue;
+        }
+        this.#trackHttpConnection(httpConn1);
+        let connInfo2 = {
+          localAddr: conn.localAddr,
+          remoteAddr: conn.remoteAddr
+        };
+        this.#serveHttp(httpConn1, connInfo2);
+      }
+    }
+    #closeHttpConn(httpConn2) {
+      this.#untrackHttpConnection(httpConn2);
+      try {
+        httpConn2.close();
+      } catch {
+      }
+    }
+    #trackListener(listener1) {
+      this.#listeners.add(listener1);
+    }
+    #untrackListener(listener2) {
+      this.#listeners.delete(listener2);
+    }
+    #trackHttpConnection(httpConn3) {
+      this.#httpConnections.add(httpConn3);
+    }
+    #untrackHttpConnection(httpConn4) {
+      this.#httpConnections.delete(httpConn4);
+    }
+  };
+  function hostnameForDisplay(hostname) {
+    return hostname === "0.0.0.0" ? "localhost" : hostname;
+  }
+  async function serve(handler, options = {}) {
+    let port = options.port ?? 8e3, hostname = options.hostname ?? "0.0.0.0", server = new Server({
+      port,
+      hostname,
+      handler,
+      onError: options.onError
+    });
+    options?.signal?.addEventListener("abort", () => server.close(), {
+      once: !0
+    });
+    let s = server.listenAndServe();
+    return port = server.addrs[0].port, "onListen" in options ? options.onListen?.({
+      port,
+      hostname
+    }) : console.log(`Listening on http://${hostnameForDisplay(hostname)}:${port}/`), await s;
+  }
+
+  // src/deno/wingblade.js
+  var WingBlade2 = {
+    args: Deno.args,
+    os: Deno.build.os,
+    variant: "Deno",
+    version: Deno.version.deno,
+    persist: !0,
+    exit: (code = 0) => {
+      Deno.exit(code);
+    },
+    getEnv: (key, fallbackValue) => Deno.env.get(key) || fallbackValue,
+    memUsed: () => Deno.memoryUsage(),
+    randomInt: (cap) => Math.floor(Math.random() * cap),
+    readFile: async function(path, opt) {
+      return await Deno.readFile(path, opt);
+    },
+    serve: (handler, opt = {}) => (opt?.onListen || (opt.onListen = function({ port, hostname }) {
+      console.error(`WingBlade serving at http://${hostname}:${port}`);
+    }), opt?.hostname || (opt.hostname = "127.0.0.1"), opt?.port || (opt.port = 8e3), serve(handler, opt)),
+    setEnv: (key, value) => Deno.env.set(key, value),
+    sleep: function(ms, maxAdd = 0) {
+      return new Promise((y, n) => {
+        AbortSignal.timeout(ms + Math.floor(maxAdd * Math.random())).addEventListener("abort", () => {
+          y();
+        });
+      });
+    },
+    upgradeWebSocket(req, opt) {
+      return Deno.upgradeWebSocket(req, opt);
+    },
+    writeFile: async function(path, data, opt) {
+      await Deno.writeFile(path, data, opt);
+    }
+  };
+
+  // src/mastodon/index.mjs
+  var shapeshiftProps = "currentTarget,explicitOriginalTarget,originalTarget,srcElement,target".split(",");
+  var renameMap = {
+    // Post
+    account: "user",
+    application: "app",
+    content: "text",
+    created_at: "atNew",
+    // Unix TS
+    edited_at: "atEdit",
+    // Unix TS
+    favourites_count: "sumFav",
+    in_reply_to_account_id: "replyUser",
+    in_reply_to_id: "replyPost",
+    language: "lang",
+    media_attachments: "media",
+    mentions: "ats",
+    reblog: "boost",
+    reblogs_count: "sumBoost",
+    replies_count: "sumReply",
+    sensitive: "cwReal",
+    spoiler_text: "cwText",
+    visibility: "access",
+    // User
+    followers_count: "sumFan",
+    following_count: "sumSub",
+    display_name: "dispName",
+    avatar_static: "avatarStatic",
+    header_static: "headerStatic",
+    statuses_count: "sumPost",
+    last_status_at: "atLastPost",
+    noindex: "noIndex",
+    verified_at: "atVerify",
+    // Unix TS
+    // Emoji
+    shortcode: "code",
+    static_url: "static",
+    visible_in_picker: "inPicker",
+    // Poll
+    expires_at: "atExpire",
+    // Unix TS
+    votes_count: "sumVote",
+    voters_count: "sumVoter",
+    // App
+    website: "site",
+    // Media
+    preview_url: "preview",
+    remote_url: "remote",
+    preview_remote_url: "previewRemote",
+    text_url: "text",
+    description: "alt"
+  }, eventRemap = {
+    update: "postNew",
+    "status.update": "postEdit",
+    delete: "postDel"
+  }, postGrab = {
+    maxAge: 2592e5,
+    // Posts are discarded if longer than 3 days
+    maxCount: 100,
+    // Grabs 100 post at most from each instance
+    pageSize: 40
+    // Grabs this many post in each batch query attempt
+  }, MastodonClient = class extends EventTarget {
+    #limitTotal = 100;
+    // How many posts should be tracked
+    #expiry = 2592e5;
+    // Max TTL for 3 days
+    #hookInstance = "";
+    #hookClient;
+    #servers = [];
+    #svrRef = {};
+    #userMuted = [];
+    #userBanned = [];
+    #userTracked = [];
+    #postStore = [];
+    #postRef = {};
+    // Refer to posts by ID (id@server)
+    #launched = !1;
+    USER_NORMAL = 0;
+    USER_NOEXEMPT = 1;
+    USER_EXCLUDED = 2;
+    filePath = "";
+    #sorter(a, b) {
+      return (b.atNew || 0) - (a.atNew || 0);
+    }
+    #addPost() {
+    }
+    #modPost() {
+    }
+    #delPost() {
+    }
+    #normalizer(post) {
+      for (let key in post)
+        renameMap[key] && (post[renameMap[key]] = post[key], delete post[key]);
+      return post.atNew && (post.atNew = new Date(post.atNew).getTime()), post.atEdit && (post.atEdit = new Date(post.atEdit).getTime()), post.atVerify && (post.atVerify = new Date(post.atVerify).getTime()), post.atExpire && (post.atExpire = new Date(post.atExpire).getTime()), post.app && this.#normalizer(post.app), post.user && this.#normalizer(post.user), post.media?.forEach((e) => {
+        this.#normalizer(e);
+      }), post.emojis?.forEach((e) => {
+        this.#normalizer(e);
+      }), post.ats?.forEach((e) => {
+        this.#normalizer(e);
+      }), post.user && post.user.fields?.forEach((e) => {
+        this.#normalizer(e);
+      }), post.poll && (post.poll.options?.forEach((e) => {
+        this.#normalizer(e);
+      }), this.#normalizer(post.poll)), post;
+    }
+    #dataProcessor(data, server) {
+      return this.#normalizer(data), data?.user?.username && (data.handle = `@${data.user.username}@${server.domain}`), data.rid = `${data.id}@${server.domain}`, data;
+    }
+    receiver(server, msg) {
+      let targetData, dispatchEvent = !0, timeNow = Date.now(), timeLimit = timeNow - postGrab.maxAge;
+      switch (msg.event) {
+        case "update":
+        case "status.update": {
+          let data = msg.payload.constructor == String ? JSON.parse(msg.payload) : msg.payload;
+          if (this.#dataProcessor(data, server), data.atNew < timeLimit) {
+            dispatchEvent = !1;
+            break;
+          }
+          if (this.#postRef[data.rid]) {
+            let pidx = this.#postStore.indexOf(this.#postRef[data.rid]);
+            pidx > -1 && (this.#postStore[pidx] = data, this.#postRef[data.rid] = data, console.debug(`MODIFY Post ${data.rid} success.`));
+          } else
+            this.#postStore.unshift(data), this.#postRef[data.rid] = data, console.debug(`CREATE Post ${data.rid} success.`);
+          targetData = data;
+          break;
+        }
+        case "delete": {
+          let rid = `${msg.payload}@${server.domain}`;
+          if (this.#postRef[rid]) {
+            let pidx = this.#postStore.indexOf(this.#postRef[rid]);
+            pidx > -1 ? (this.#postStore.splice(pidx, 1), console.debug(`DELETE Post ${rid} success (${pidx}).`)) : console.warn(`DELETE Post ${rid} not found in postStore.`);
+          } else
+            console.warn(`DELETE Post ${rid} not found in postRef.`);
+          targetData = msg.payload;
+          break;
+        }
+        default:
+          console.error(`Unknown message type ${msg.event} from ${server.domain}.`), console.error(msg);
+      }
+      this.#postStore.sort(this.#sorter), this.#postStore.length > this.#limitTotal && this.#postStore.splice(this.#limitTotal, this.#postStore.length - this.#limitTotal).forEach((e) => {
+        delete this.#postRef[e.rid];
+      }), dispatchEvent && this.dispatchEvent(new MessageEvent(eventRemap[msg.event] || msg.event, { data: targetData }));
+    }
+    //addServer() {};
+    getPosts() {
+      return this.#postStore;
+    }
+    getServers() {
+      return this.#servers;
+    }
+    startFor(e) {
+      e.ws = new WebSocket(`wss://${e.domain}/api/v1/streaming/`), e.ws.addEventListener("open", () => {
+        e.auth ? (e.ws.send(`{"type":"subscribe","stream":"public:local","access_token":"${e.auth || ""}"}}`), console.info(`Authenticated local timeline started for ${e.domain}.`)) : (e.ws.send('{"type":"subscribe","stream":"public:local"}'), console.info(`Local timeline started for ${e.domain}.`)), e.hook && (e.ws.send(`{"type":"subscribe","stream":"user","access_token":"${e.auth || ""}"}`), console.info(`User stream started for ${e.domain}.`));
+      }), e.ws.addEventListener("message", (ev) => {
+        let data = JSON.parse(ev.data);
+        this.receiver.call(this, e, data);
+      }), e.ws.addEventListener("close", () => {
+        AbortSignal.timeout(3e3).onabort = () => {
+          this.startFor(e);
+        };
+      });
+    }
+    launch(streamOnly) {
+      this.#launched || (this.#servers.forEach(async (e) => {
+        if (console.info(`Starting for ${e.domain}.`), this.startFor.call(this, e), !streamOnly) {
+          let opt = {
+            headers: {}
+          };
+          e.auth && (opt.headers.Authorization = `Bearer ${e.auth}`);
+          let request = await fetch(`https://${e.domain}/api/v1/timelines/public?local=true&only_media=false&limit=${postGrab.pageSize}`, opt);
+          request.status == 200 ? (await request.json())?.forEach((payload) => {
+            this.receiver(e, {
+              event: "update",
+              payload
+            });
+          }) : console.error(`Post fetching for ${e.domain} failed: ${request.status} ${request.statusText}`);
+        }
+      }), this.#launched = !0);
+    }
+    constructor({ servers, serversCw, instance, serversTk, streamOnly = !1, filePath = "./auth.json" }) {
+      super(), servers?.forEach((e) => {
+        let server = {
+          domain: e,
+          ws: void 0,
+          cw: !1,
+          hook: e == instance,
+          auth: !1
+        };
+        this.#svrRef[e] = this.#servers.length, this.#servers.push(server);
+      }), serversCw?.forEach((e) => {
+        let server = {
+          domain: e,
+          ws: void 0,
+          cw: !0,
+          hook: e == instance,
+          auth: !1
+        };
+        this.#svrRef[e] = this.#servers.length, this.#servers.push(server);
+      }), serversTk?.forEach((e) => {
+        this.#servers[this.#svrRef[e[0]]].auth = !0;
+      }), this.#hookInstance = instance, this.launch(streamOnly);
+    }
+  };
+
+  // src/core/index.js
+  var utf8Enc = new TextEncoder("utf-8"), main = async function(args) {
+    let serverImpl = `Silk@${WingBlade.variant}`;
+    switch (console.debug(`${serverImpl} - Better Together`), args[0] || "serve") {
+      case "login": {
+        console.error("Deprecated."), WingBlade.exit(0);
+        break;
+      }
+      case "serve": {
+        console.error("Starting the Silk server!");
+        let listServers = WingBlade.getEnv("LIST_SERVER")?.split(",") || [], listServersCw = WingBlade.getEnv("LIST_SERVER_CW")?.split(",") || [], listServersTk = WingBlade.getEnv("LIST_SERVER_TK")?.split(",") || [], hookServer = WingBlade.getEnv("HOOK_SERVER"), streamOnly = WingBlade.getEnv("NO_BATCH_REQUEST", "0") == "1";
+        hookServer || console.error("Hook server not defined!"), listServersTk.forEach((e, i, a) => {
+          let splitAt = e.indexOf("=");
+          splitAt > -1 && (a[i] = [e.slice(0, splitAt), e.slice(splitAt + 1)]);
+        });
+        let mastoConf = {
+          servers: listServers,
+          serversCw: listServersCw,
+          serversTk: listServersTk,
+          instance: hookServer,
+          streamOnly
+        };
+        console.info(mastoConf);
+        let mastoClient = new MastodonClient(mastoConf), batchCache = utf8Enc.encode("[]"), activeClients = [];
+        mastoClient.addEventListener("postNew", async ({ data }) => {
+          let runCache = `{"event":"set","data":${JSON.stringify(data)}}`;
+          activeClients.forEach(async (e) => {
+            e.send(runCache);
+          }), batchCache = utf8Enc.encode(JSON.stringify(mastoClient.getPosts()));
+        }), mastoClient.addEventListener("postEdit", async ({ data }) => {
+          let runCache = `{"event":"set","data":${JSON.stringify(data)}}`;
+          activeClients.forEach(async (e) => {
+            e.send(runCache);
+          }), batchCache = utf8Enc.encode(JSON.stringify(mastoClient.getPosts()));
+        }), mastoClient.addEventListener("postDel", async ({ data }) => {
+          let runCache = `{"event":"set","data":${JSON.stringify(data)}}`;
+          activeClients.forEach(async (e) => {
+            e.send(runCache);
+          }), batchCache = utf8Enc.encode(JSON.stringify(mastoClient.getPosts()));
+        }), WingBlade.serve((request) => {
+          let url = new URL(request.url);
+          switch (request.method?.toLowerCase()) {
+            case "get": {
+              switch (url.pathname) {
+                case "/nr/silk/servers": {
+                  let det = [];
+                  return mastoClient.getServers().forEach(({ domain, cw, ws }) => {
+                    det.push({ domain, cw, active: ws.readyState == 1 });
+                  }), new Response(JSON.stringify(det), {
+                    status: 200,
+                    headers: {
+                      "content-type": "application/json",
+                      server: serverImpl
+                    }
+                  });
+                  break;
+                }
+                case "/nr/silk/timeline":
+                case "/nr/silk/timeline/":
+                  return new Response(batchCache, {
+                    status: 200,
+                    headers: {
+                      "content-type": "application/json",
+                      server: serverImpl
+                    }
+                  });
+                case "/rt/silk/timeline":
+                case "/rt/silk/timeline/": {
+                  if (request.headers.get("upgrade") == "websocket") {
+                    let { socket, response } = WingBlade.upgradeWebSocket(request);
+                    return socket.addEventListener("open", () => {
+                      socket.send('{"event":"ack"}'), activeClients.push(socket);
+                    }), socket.addEventListener("close", () => {
+                      let index = activeClients.indexOf(socket);
+                      index > -1 && activeClients.splice(index, 1);
+                    }), response;
+                  } else
+                    return new Response("SSE isn't supported yet.", {
+                      status: 400,
+                      server: serverImpl
+                    });
+                  break;
+                }
+                default:
+                  return new Response(`Endpoint ${url.pathname} not found.`, {
+                    status: 404,
+                    server: serverImpl
+                  });
+              }
+              break;
+            }
+            default:
+              return new Response("Method disallowed.", {
+                status: 405,
+                server: serverImpl
+              });
+          }
+        });
+        break;
+      }
+      default:
+        console.error(`Unknown subcommand "${args.join(" ")}"`);
+    }
+  };
+
+  // src/deno/index.js
+  self.WingBlade = WingBlade2;
+  main(WingBlade2.args);
+})();

@@ -25,7 +25,7 @@ let WingBlade = {
 		return;
 	},
 	serve: (handler, opt = {}) => {
-		self.addEventListener("fetch", async function(event) {
+		globalThis.addEventListener("fetch", async function(event) {
 			let request = event.request;
 			let clientInfo = request.headers.get("cf-connecting-ip");
 			event.respondWith(handler(request));

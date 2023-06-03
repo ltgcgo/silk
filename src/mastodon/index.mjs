@@ -1,5 +1,7 @@
 "use strict";
 
+// DEPRECATED
+
 // onPost
 // onEdit
 
@@ -169,12 +171,18 @@ eventRemap = {
 	"status.update": "postEdit",
 	"delete": "postDel"
 };
+
+// Mastodon post grab cycle
+const postGrab = {
+	maxAge: 259200000, // Posts are discarded if longer than 3 days
+	maxCount: 100, // Grabs 100 post at most from each instance
+	pageSize: 40 // Grabs this many post in each batch query attempt
+};
+
 let MastodonClient = class extends EventTarget {
-	#limitServer = 40; // Max returned posts
-	#limitTotal = 80; // How many posts should be tracked
+	#limitTotal = 100; // How many posts should be tracked
 	#expiry = 259200000; // Max TTL for 3 days
 	#hookInstance = "";
-	#hookAuthToken = "";
 	#hookClient;
 	#servers = [];
 	#svrRef = {};
@@ -183,9 +191,11 @@ let MastodonClient = class extends EventTarget {
 	#userTracked = [];
 	#postStore = [];
 	#postRef = {}; // Refer to posts by ID (id@server)
+	#launched = false;
 	USER_NORMAL = 0;
 	USER_NOEXEMPT = 1;
 	USER_EXCLUDED = 2;
+	filePath = "";
 	#sorter(a, b) {
 		return (b.atNew || 0) - (a.atNew || 0);
 	};
@@ -250,26 +260,32 @@ let MastodonClient = class extends EventTarget {
 	receiver(server, msg) {
 		let targetData;
 		let dispatchEvent = true;
+		let timeNow = Date.now(), timeLimit = timeNow - postGrab.maxAge;
 		switch (msg.event) {
 			case "update":
 			case "status.update": {
 				// Post creation and edit
 				let data = msg.payload.constructor == String ? JSON.parse(msg.payload) : msg.payload;
 				this.#dataProcessor(data, server);
+				if (data.atNew < timeLimit) {
+					dispatchEvent = false;
+					//console.debug(`MODIFY Post ${data.rid} aborted due to exceeding maxAge.`);
+					break;
+				};
 				if (this.#postRef[data.rid]) {
 					let pidx = this.#postStore.indexOf(this.#postRef[data.rid]);
 					if (pidx > -1) {
 						this.#postStore[pidx] = data;
 						this.#postRef[data.rid] = data;
-						console.error(`MODIFY Post ${data.rid} success.`);
+						console.debug(`MODIFY Post ${data.rid} success.`);
 					} else {
-						console.error(`MODIFY Post ${data.rid} not found in postStore.`);
+						//console.error(`MODIFY Post ${data.rid} not found in postStore.`);
 					};
 				} else {
-					console.error(`MODIFY Post ${data.rid} not found in postRef. Creating.`);
+					//console.debug(`MODIFY Post ${data.rid} not found in postRef. Creating.`);
 					this.#postStore.unshift(data);
 					this.#postRef[data.rid] = data;
-					console.error(`CREATE Post ${data.rid} success.`);
+					console.debug(`CREATE Post ${data.rid} success.`);
 				};
 				targetData = data;
 				break;
@@ -281,18 +297,18 @@ let MastodonClient = class extends EventTarget {
 					let pidx = this.#postStore.indexOf(this.#postRef[rid]);
 					if (pidx > -1) {
 						this.#postStore.splice(pidx, 1);
-						console.error(`DELETE Post ${rid} success.`);
+						console.debug(`DELETE Post ${rid} success (${pidx}).`);
 					} else {
-						console.error(`DELETE Post ${rid} not found in postStore.`);
+						console.warn(`DELETE Post ${rid} not found in postStore.`);
 					};
 				} else {
-					console.error(`DELETE Post ${rid} not found in postRef.`);
+					console.warn(`DELETE Post ${rid} not found in postRef.`);
 				};
 				targetData = msg.payload;
 				break;
 			};
 			default: {
-				console.error(`Unknown message type ${msg.event}.`);
+				console.error(`Unknown message type ${msg.event} from ${server.domain}.`);
 				console.error(msg);
 			};
 		};
@@ -305,19 +321,29 @@ let MastodonClient = class extends EventTarget {
 		if (dispatchEvent) {
 			this.dispatchEvent(new MessageEvent(eventRemap[msg.event] || msg.event, {data: targetData}));
 		} else {
-			console.error(`Event dispatch aborted.`);
+			//console.debug(`Event dispatch aborted.`);
 		};
 	};
 	//addServer() {};
 	getPosts() {
 		return this.#postStore;
 	};
+	getServers() {
+		return this.#servers;
+	};
 	startFor(e) {
 		e.ws = new WebSocket(`wss://${e.domain}/api/v1/streaming/`);
 		e.ws.addEventListener("open", () => {
-			e.ws.send(`{"type":"subscribe","stream":"public:local"}`);
-			if (e.domain == this.#hookInstance) {
-				e.ws.send(`{"type":"subscribe","stream":"user","access_token":"${this.#hookAuthToken}"}`);
+			if (e.auth) {
+				e.ws.send(`{"type":"subscribe","stream":"public:local","access_token":"${e.auth || ""}"}}`);
+				console.info(`Authenticated local timeline started for ${e.domain}.`);
+			} else {
+				e.ws.send(`{"type":"subscribe","stream":"public:local"}`);
+				console.info(`Local timeline started for ${e.domain}.`);
+			};
+			if (e.hook) {
+				e.ws.send(`{"type":"subscribe","stream":"user","access_token":"${e.auth || ""}"}`);
+				console.info(`User stream started for ${e.domain}.`);
 			};
 		});
 		e.ws.addEventListener("message", (ev) => {
@@ -329,40 +355,46 @@ let MastodonClient = class extends EventTarget {
 				this.startFor(e);
 			};
 		});
-		console.info(`Started for ${e.domain}.`);
 	};
 	launch(streamOnly) {
-		this.#servers.forEach(async (e) => {
-			console.info(`Starting for ${e.domain}.`);
-			this.startFor.call(this, e);
-			if (!streamOnly) {
-				let opt = {
-					headers: {}
-				};
-				if (e.auth) {
-					opt.headers["Authorization"] = `Bearer ${e.auth}`;
-				};
-				let request = await fetch(`https://${e.domain}/api/v1/timelines/public?local=true&only_media=false&limit=${this.#limitServer}`);
-				if (request.status == 200) {
-					(await request.json())?.forEach((payload) => {
-						this.receiver(e, {
-							event: "update",
-							payload
+		if (this.#launched) {
+			//console.debug(`Already launched.`);
+		} else {
+			this.#servers.forEach(async (e) => {
+				console.info(`Starting for ${e.domain}.`);
+				this.startFor.call(this, e);
+				if (!streamOnly) {
+					let opt = {
+						headers: {}
+					};
+					if (e.auth) {
+						opt.headers["Authorization"] = `Bearer ${e.auth}`;
+					};
+					let request = await fetch(`https://${e.domain}/api/v1/timelines/public?local=true&only_media=false&limit=${postGrab.pageSize}`, opt);
+					if (request.status == 200) {
+						(await request.json())?.forEach((payload) => {
+							this.receiver(e, {
+								event: "update",
+								payload
+							});
 						});
-					});
-				} else {
-					console.error(`Post fetching for ${e.domain} failed: ${request.status} ${request.statusText}`);
+					} else {
+						console.error(`Post fetching for ${e.domain} failed: ${request.status} ${request.statusText}`);
+					};
 				};
-			};
-		});
+			});
+			this.#launched = true;
+		};
 	};
-	constructor({servers, serversCw, instance, accessToken, serversTk, streamOnly = false}) {
+	constructor({servers, serversCw, instance, serversTk, streamOnly = false, filePath = "./auth.json"}) {
 		super();
 		servers?.forEach((e) => {
 			let server = {
 				domain: e,
 				ws: undefined,
-				cw: false
+				cw: false,
+				hook: e == instance,
+				auth: false
 			};
 			this.#svrRef[e] = this.#servers.length;
 			this.#servers.push(server);
@@ -371,16 +403,17 @@ let MastodonClient = class extends EventTarget {
 			let server = {
 				domain: e,
 				ws: undefined,
-				cw: true
+				cw: true,
+				hook: e == instance,
+				auth: false
 			};
 			this.#svrRef[e] = this.#servers.length;
 			this.#servers.push(server);
 		});
 		serversTk?.forEach((e) => {
-			this.#servers[this.#svrRef[e[0]]].auth = e[1];
+			this.#servers[this.#svrRef[e[0]]].auth = true;
 		});
 		this.#hookInstance = instance;
-		this.#hookAuthToken = accessToken;
 		this.launch(streamOnly);
 	};
 };
