@@ -3,7 +3,16 @@
 	font-display: fallback;
 }
 
-div, span, article {
+@keyframes fadeIn {
+	0% {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+div, article {
 	cursor: default;
 }
 a {
@@ -14,6 +23,9 @@ body {
 	font-family: "Cantarell", "Cantarell Web", sans-serif;
 }
 
+nav.navbar {
+	box-shadow: 0 12px 8px -8px #7f7f7f33;
+}
 a.navbar-item.is-active {
 	background: #7f7f7f20 !important;
 }
@@ -21,24 +33,59 @@ a.navbar-item.is-active {
 .fedipost {
 	max-width: 900px;
 	margin: 0.5em auto;
+	animation: 0.2s linear fadeIn;
 }
 .fedipic {
-	max-width: 25vw;
+	max-width: 80vw;
 	max-height: 50vh;
+}
+img.fedipic.multipic {
+	max-width: 25vw;
 }
 .fediframe {
 	overflow: hidden;
 	border: 0px solid;
 	border-radius: 4px;
+	box-shadow: 0 2px 8px 2px #0003;
 	background: #aaaaaa40;
 	cursor: zoom-in;
 	display: grid;
+	margin: 8px;
+}
+.fedistat > div {
+	flex: 1;
+	text-align: center;
+	padding: 8px;
+	transition: background 0.2s;
+}
+.fedistat > div:hover {
+	background: #7f7f7f33;
+}
+.fedistat img, .fedipostuser img.darkinvert {
+	vertical-align: text-top;
+	height: 20px;
+}
+.fedipostuser .media-right {
+	text-align: right;
+}
+.fedistat span {
+	min-width: 2em;
+	display: inline-block;
+	text-align: center;
 }
 .fedimoji {
 	max-height: 24px;
 }
 .fedipostuser .fedimoji {
 	max-height: 18px;
+}
+@media (prefers-color-scheme: dark) {
+	.darkinvert {
+		filter: invert(100%);
+	}
+	img {
+		filter: brightness(80%);
+	}
 }
 [id^='tab-'] {
 	padding-top: 4em;

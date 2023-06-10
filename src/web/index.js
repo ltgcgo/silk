@@ -54,6 +54,20 @@ let updateLang = () => {
 addEventListener("languagechange", updateLang);
 updateLang();
 
+// Use dates
+self.formatTime = (ts = 0, format = "DD-MM-YYYY hh:mm:ss") => {
+	let date = new Date(ts);
+	let result = format;
+	result = result.replace("YYYY", `${date.getFullYear()}`.padStart(2, "0"));
+	result = result.replace("YY", `${date.getFullYear() % 100}`.padStart(2, "0"));
+	result = result.replace("DD", `${date.getDate()}`.padStart(2, "0"));
+	result = result.replace("MM", `${date.getMonth() + 1}`.padStart(2, "0"));
+	result = result.replace("hh", `${date.getHours()}`.padStart(2, "0"));
+	result = result.replace("mm", `${date.getMinutes()}`.padStart(2, "0"));
+	result = result.replace("ss", `${date.getSeconds()}`.padStart(2, "0"));
+	return result;
+};
+
 // Get posts
 Alpine.store("posts", []);
 let postRef = {};

@@ -22,7 +22,8 @@
 		<div :class="`navbar-menu ${navShow?'is-active':''}`">
 			<div class="navbar-start">
 				<a :class="navItem[+($store.app.view=='timeline')]" href="#!/timeline" x-text="$store.str.tab.timeline"></a>
-				<a :class="navItem[+($store.app.view=='artists')]" href="#!/artists" x-text="$store.str.tab.artists"></a>
+				<a :class="navItem[+($store.app.view=='discover')]" href="#!/discover" x-text="$store.str.tab.discover"></a>
+				<a :class="navItem[+($store.app.view=='join')]" href="#!/join" x-text="$store.str.tab.join"></a>
 			</div>
 			<div class="navbar-end">
 				<a :class="navItem[+($store.app.view=='about')]" href="#!/about" x-text="$store.str.tab.about"></a>
@@ -42,34 +43,48 @@
 								</p>
 							</figure>
 							<div class="media-content">
-								<p><b class="is-size-6" x-html="post.user.html || post.user.dispName || post.user.username"></b></p>
+								<p><b class="is-size-6" x-html="post.user.html || post.user.dispName || post.user.username"></b> <img class="darkinvert" :title="$store.str.post.bot" :alt="$store.str.post.bot" x-show="post.user.bot" src="./img/bot.svg"></img></p>
 								<p><a><small class="is-size-7" x-text="post.handle"></small></a></p>
 							</div>
 							<div class="media-right">
 								<p>
-									<span class="tag is-light" x-text="post.lang.toUpperCase()">EN</span>
+									<img class="darkinvert" :title="$store.str.post.edited" :alt="$store.str.post.edited.replace('${time}',formatTime(post.atNew,$store.str.lang.timedateFull))" x-show="post.atEdit>0" src="./img/edited.svg"></img>
+									<span class="tag is-light" :title="$store.str.lang.lang" x-text="post.lang.toUpperCase()">EN</span>
+								</p>
+								<p>
+									<span class="is-size-7" x-text="formatTime(post.atNew,$store.str.lang.timedate)" :title="formatTime(post.atNew,$store.str.lang.timedateFull)"></span>
 								</p>
 							</div>
 						</article>
 						<div class="content" x-html="post.html" :lang="post.lang"></div>
-						<div class="content is-flex is-flex-direction-row is-flex-wrap-wrap is-justify-content-space-evenly is-align-content-center">
-							<template x-for="pic in post.media">
-								<div class="fediframe is-justify-content-center is-align-content-center">
-									<img class="fedipic" :src="pic.url" :alt="pic.alt" :title="pic.alt" fetchpriority="low" loading="lazy"></img>
-								</div>
-							</template>
-						</div>
+						<template x-if="post.media.length">
+							<div class="content is-flex is-flex-direction-row is-flex-wrap-wrap is-justify-content-space-evenly is-align-content-center">
+								<template x-for="pic in post.media">
+									<div class="fediframe is-justify-content-center is-align-content-center">
+										<template x-if="pic.type=='image'">
+											<img :class="post.media.length==1?'fedipic':'fedipic multipic'" :src="pic.url" :alt="pic.alt" :title="pic.alt" fetchpriority="low" loading="lazy"></img>
+										</template>
+										<template x-if="pic.type=='gifv'">
+											<video class="fedipic" :src="pic.url" :alt="pic.alt" :title="pic.alt" preload="metadata" :poster="pic.preview" autoplay controls loop></video>
+										</template>
+									</div>
+								</template>
+							</div>
+						</template>
 						<div class="fedistat is-size-6 is-flex is-flex-direction-row is-flex-wrap-wrap is-justify-content-space-evenly is-align-content-center">
-							<div><span x-text="$store.str.post.reply"></span> <span x-text="post.sumReply">?</span></div>
-							<div><span x-text="$store.str.post.boost"></span> <span x-text="post.sumBoost">?</span></div>
-							<div><span x-text="$store.str.post.like"></span> <span x-text="post.sumFav">?</span></div>
-							<div><a x-text="$store.str.post.open" target="_blank" :href="post.url"></a></div>
+							<div :title="$store.str.post.reply"><img src="./img/reply.svg" :alt="$store.str.post.reply"></img> <span x-text="post.sumReply">?</span></div>
+							<div :title="$store.str.post.boost"><img src="./img/boost.svg" :alt="$store.str.post.boost"></img> <span x-text="post.sumBoost">?</span></div>
+							<div :title="$store.str.post.like"><img :alt="$store.str.post.like" src="./img/fav.svg"></img> <span x-text="post.sumFav">?</span></div>
+							<div :title="$store.str.post.open"><a target="_blank" :href="post.url"><img src="./img/open.svg"></img></a></div>
 						</div>
 					</div>
 				</div>
 			</template>
 		</div>
-		<div :class="viewItem[+($store.app.view=='artists')]" id="tab-artists">
+		<div :class="viewItem[+($store.app.view=='discover')]" id="tab-discover">
+			<div class="content" x-text="$store.str.global.comingSoon"></div>
+		</div>
+		<div :class="viewItem[+($store.app.view=='join')]" id="tab-join">
 			<div class="content" x-text="$store.str.global.comingSoon"></div>
 		</div>
 		<div :class="viewItem[+($store.app.view=='about')]" id="tab-about">
@@ -89,11 +104,14 @@
 						<td>Lumière Élevé</td>
 					</tr>
 					<tr>
-						<th rowspan="2">Dependencies</th>
+						<th rowspan="3">Dependencies</th>
 						<td><a href="https://alpinejs.dev/" target="_blank">AlpineJS</a></td>
 					</tr>
 					<tr>
 						<td><a href="https://bulma.io/" target="_blank">Bulma</a></td>
+					</tr>
+					<tr>
+						<td><a href="https://feathericons.com/" target="_blank">Feather</a></td>
 					</tr>
 					<tr>
 						<th>Source code</th>

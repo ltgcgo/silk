@@ -1,9 +1,15 @@
 {
 	"en": {
+		"lang": {
+			"lang": "Language",
+			"timedate": "DD-MM hh:mm:ss",
+			"timedateFull": "DD-MM-YYYY hh:mm:ss"
+		},
 		"tab": {
 			"timeline": "Timeline",
-			"artists": "Artists",
+			"discover": "Discover",
 			"docs": "Docs",
+			"join": "Join!",
 			"about": "About"
 		},
 		"global": {
@@ -12,15 +18,48 @@
 		"post": {
 			"reply": "Reply",
 			"boost": "Boost",
-			"like": "Like",
-			"open": "Open"
+			"like": "Favourite",
+			"open": "Open",
+			"bot": "Bot",
+			"edited": "Edited at ${time}"
+		}
+	},
+	"en-US": {
+		"lang": {
+			"lang": "Language",
+			"timedate": "MM-DD hh:mm:ss",
+			"timedateFull": "MM-DD-YYYY hh:mm:ss"
+		},
+		"tab": {
+			"timeline": "Timeline",
+			"discover": "Discover",
+			"docs": "Docs",
+			"join": "Join!",
+			"about": "About"
+		},
+		"global": {
+			"comingSoon": "Coming soon!"
+		},
+		"post": {
+			"reply": "Reply",
+			"boost": "Boost",
+			"like": "Favorite",
+			"open": "Open",
+			"bot": "Bot",
+			"edited": "Edited at ${time}"
 		}
 	},
 	"fr": {
+		"lang": {
+			"lang": "Langue",
+			"timedate": "DD-MM hh:mm:ss",
+			"timedateFull": "DD-MM-YYYY hh:mm:ss"
+		},
 		"tab": {
 			"timeline": "Fils",
-			"artists": "Artistes",
+			"discover": "Découvrir",
 			"docs": "Docs",
+			"join": "Rejoindre!",
 			"about": "À Propos"
 		},
 		"global": {
@@ -30,7 +69,9 @@
 			"reply": "Réponse",
 			"boost": "Partage",
 			"like": "Favori",
-			"open": "Ouvrir"
+			"open": "Ouvrir",
+			"bot": "Robot",
+			"edited": "Modifié à ${time}"
 		}
 	}
 }
