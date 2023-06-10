@@ -22,20 +22,20 @@
 		</div>
 		<div :class="`navbar-menu ${navShow?'is-active':''}`">
 			<div class="navbar-start">
-				<a :class="navItem[+($store.app.view=='timeline')]" href="#!/timeline" x-text="$store.str.tab.timeline"></a>
-				<a :class="navItem[+($store.app.view=='discover')]" href="#!/discover" x-text="$store.str.tab.discover"></a>
-				<a :class="navItem[+($store.app.view=='join')]" href="#!/join" x-text="$store.str.tab.join"></a>
+				<a :class="navItem[+($store.app.view=='timeline')]" href="#!/timeline" x-html="$store.str.tab.timeline"></a>
+				<a :class="navItem[+($store.app.view=='discover')]" href="#!/discover" x-html="$store.str.tab.discover"></a>
+				<a :class="navItem[+($store.app.view=='join')]" href="#!/join" x-html="$store.str.tab.join"></a>
 			</div>
 			<div class="navbar-end">
-				<a :class="navItem[+($store.app.view=='about')]" href="#!/about" x-text="$store.str.tab.about"></a>
-				<a class="navbar-item" href="https://kb.ltgc.cc/silk/" target="_blank" x-text="$store.str.tab.docs"></a>
+				<a :class="navItem[+($store.app.view=='about')]" href="#!/about" x-html="$store.str.tab.about"></a>
+				<a class="navbar-item" href="https://kb.ltgc.cc/silk/" target="_blank" x-html="$store.str.tab.docs"></a>
 			</div>
 		</div>
 	</nav>
 	<div class="container">
 		<div :class="viewItem[+($store.app.view=='timeline')]" id="tab-timeline">
 			<template x-for="post in $store.posts">
-				<div class="card fedipost">
+				<div class="card fedipost" x-data="{showCw:false}">
 					<div class="card-content">
 						<article class="media fedipostuser">
 							<figure class="media-left">
@@ -57,7 +57,26 @@
 								</p>
 							</div>
 						</article>
-						<div class="content" x-html="post.html" :lang="post.lang"></div>
+						<template x-if="post.cwText?.length">
+							<div class="level">
+								<div class="level-left">
+									<div class="level-item">
+										<img class="darkinvert" :title="$store.str.post.cw" :alt="$store.str.post.cw" src="./img/cw.svg"></img>
+									</div>
+									<div class="level-item">
+										<span x-text="post.cwText" :lang="post.lang"></span>
+									</div>
+								</div>
+								<div class="level-right">
+									<div class="level-item">
+										<a @click="showCw=!showCw"><img class="darkinvert" :title="$store.str.global.seeMore" :alt="$store.str.global.seeMore" src="./img/more.svg" x-show="!showCw"></img><img class="darkinvert" :title="$store.str.global.seeLess" :alt="$store.str.global.seeLess" src="./img/less.svg" x-show="showCw"></img></a>
+									</div>
+								</div>
+							</div>
+						</template>
+						<template x-if="!post.cwText?.length||showCw">
+							<div class="content" x-html="post.html" :lang="post.lang"></div>
+						</template>
 						<template x-if="post.media.length">
 							<div class="content is-flex is-flex-direction-row is-flex-wrap-wrap is-justify-content-space-evenly is-align-content-center">
 								<template x-for="pic in post.media">
@@ -86,7 +105,7 @@
 			<div class="content" x-text="$store.str.global.comingSoon"></div>
 		</div>
 		<div :class="viewItem[+($store.app.view=='join')]" id="tab-join">
-			<div class="content">
+			<div class="content mx-auto">
 				<h3 x-text="$store.str.join.hadAcct"></h3>
 				<p x-text="$store.str.join.hadAcctText"></p>
 				<h3 x-text="$store.str.join.noAcct"></h3>
@@ -100,6 +119,7 @@
 				</ul>
 				<h3 x-text="$store.str.join.rndmInst"></h3>
 				<p x-text="$store.str.join.rndmInstText"></p>
+				<p><button class="button is-link" x-text="$store.str.global.comingSoon">Button</button></p>
 			</div>
 		</div>
 		<div :class="viewItem[+($store.app.view=='about')]" id="tab-about">

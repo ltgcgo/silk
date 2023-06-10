@@ -13,7 +13,9 @@
 			"about": "About"
 		},
 		"global": {
-			"comingSoon": "Coming soon!"
+			"comingSoon": "Coming soon!",
+			"seeMore": "Show more",
+			"seeLess": "Show less"
 		},
 		"post": {
 			"reply": "Reply",
@@ -21,6 +23,7 @@
 			"like": "Favourite",
 			"open": "Open",
 			"bot": "Bot",
+			"cw": "Content Warning",
 			"edited": "Edited at ${time}"
 		},
 		"join": {
@@ -46,7 +49,9 @@
 			"about": "About"
 		},
 		"global": {
-			"comingSoon": "Coming soon!"
+			"comingSoon": "Coming soon!",
+			"seeMore": "Show more",
+			"seeLess": "Show less"
 		},
 		"post": {
 			"reply": "Reply",
@@ -54,6 +59,7 @@
 			"like": "Favorite",
 			"open": "Open",
 			"bot": "Bot",
+			"cw": "Content Warning",
 			"edited": "Edited at ${time}"
 		},
 		"join": {
@@ -79,7 +85,9 @@
 			"about": "À Propos"
 		},
 		"global": {
-			"comingSoon": "À venir!"
+			"comingSoon": "À venir!",
+			"seeMore": "Voir plus",
+			"seeLess": "Voir moin"
 		},
 		"post": {
 			"reply": "Réponse",
@@ -87,6 +95,7 @@
 			"like": "Favori",
 			"open": "Ouvrir",
 			"bot": "Robot",
+			"cw": "Contentu Sensible",
 			"edited": "Modifié à ${time}"
 		},
 		"join": {}

@@ -64,7 +64,7 @@ img.fedipic.multipic {
 .fedistat > div:hover {
 	background: #7f7f7f33;
 }
-.fedistat img, .fedipostuser img.darkinvert {
+.fedistat img, .fedipost img.darkinvert, {
 	vertical-align: text-top;
 	height: 20px;
 }
@@ -93,6 +93,7 @@ img.fedipic.multipic {
 [id^='tab-'] {
 	padding-top: 4em;
 	min-height: calc(100vh - 168px);
+	max-width: 1080px !important;
 }
 
 #tab-join > div.content {
