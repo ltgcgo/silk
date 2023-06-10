@@ -49,7 +49,7 @@
 							</div>
 							<div class="media-right">
 								<p>
-									<img class="darkinvert" :title="$store.str.post.edited" :alt="$store.str.post.edited.replace('${time}',formatTime(post.atNew,$store.str.lang.timedateFull))" x-show="post.atEdit>0" src="./img/edited.svg"></img>
+									<img class="darkinvert" :title="$store.str.post.edited.replace('${time}',formatTime(post.atEdit,$store.str.lang.timedateFull))" :alt="$store.str.post.edited.replace('${time}',formatTime(post.atEdit,$store.str.lang.timedateFull))" x-show="post.atEdit>0" src="./img/edited.svg"></img>
 									<span class="tag is-light" :title="$store.str.lang.lang" x-text="post.lang.toUpperCase()">EN</span>
 								</p>
 								<p>
@@ -65,7 +65,7 @@
 										<template x-if="pic.type=='image'">
 											<img :class="post.media.length==1?'fedipic':'fedipic multipic'" :src="pic.url" :alt="pic.alt" :title="pic.alt" fetchpriority="low" loading="lazy"></img>
 										</template>
-										<template x-if="pic.type=='gifv'">
+										<template x-if="['gifv','video'].indexOf(pic.type)>-1">
 											<video class="fedipic" :src="pic.url" :alt="pic.alt" :title="pic.alt" preload="metadata" :poster="pic.preview" autoplay controls loop></video>
 										</template>
 									</div>
