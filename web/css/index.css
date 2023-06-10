@@ -35,6 +35,9 @@ a.navbar-item.is-active {
 	margin: 0.5em auto;
 	animation: 0.2s linear fadeIn;
 }
+.fedipost .invisible {
+	display: none;
+}
 .fedipic {
 	max-width: 80vw;
 	max-height: 50vh;

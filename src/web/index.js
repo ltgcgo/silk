@@ -82,6 +82,9 @@ let renderPost = function (post) {
 	post.emojis.forEach((e) => {
 		post.html = post.html.replaceAll(`:${e.code}:`, `<img class="fedimoji" src="${e.static}" title="${e.code}" fetchpriority="low" loading="lazy"></img>`);
 	});
+	post.html = post.html
+		.replaceAll(` class="mention hashtag" rel="tag">`, ` class="mention hashtag" target="_blank" rel="tag">`)
+		.replaceAll(` class="u-url mention">`, ` class="u-url mention" href="_blank">`);
 };
 
 Alpine.start();
