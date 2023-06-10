@@ -42,7 +42,7 @@
 								</p>
 							</figure>
 							<div class="media-content">
-								<p><b class="is-size-4" x-text="post.user.dispName || post.user.username"></b></p>
+								<p><b class="is-size-4" x-html="post.user.html || post.user.dispName || post.user.username"></b></p>
 								<p><a><small x-text="post.handle"></small></a></p>
 							</div>
 							<div class="media-right">
