@@ -55,7 +55,7 @@ addEventListener("languagechange", updateLang);
 updateLang();
 
 // Get posts
-let postStore = Alpine.store("posts", []);
+Alpine.store("posts", []);
 let postRef = {};
 let renderPost = function (post) {
 	// Render display names
@@ -76,7 +76,7 @@ let setPost = (e, dir = 0) => {
 	renderPost(e);
 	if (postRef[e.rid]) {
 		// Modify
-		let modIndex = postStore.indexOf(postRef[e.rid]);
+		let modIndex = Alpine.store("posts").indexOf(postRef[e.rid]);
 		if (modIndex > -1) {
 			postRef[e.rid] = e;
 			Alpine.store("posts")[modIndex] = e;
@@ -97,7 +97,7 @@ let delPost = (rid) => {};
 (async () => {
 	let failed = true;
 	while (failed) {
-		let reply = await fetch("./test.json");
+		let reply = await fetch("https://api.ltgc.cc/nr/silk/timeline");
 		if (reply.status == 200) {
 			(await reply.json()).forEach(async (e) => {
 				setPost(e);
