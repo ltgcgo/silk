@@ -1,7 +1,7 @@
 @font-face {
 	font-family: "Cantarell Web";
 	font-display: fallback;
-	src: url("./font/cantarell_vf.woff2");
+	src: url("../font/cantarell_vf.woff2");
 }
 
 @keyframes fadeIn {
