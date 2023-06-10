@@ -46,6 +46,13 @@ a.navbar-item.is-active {
 img.fedipic.multipic {
 	max-width: 25vw;
 }
+.fedivote {
+	border: 0 solid;
+	border-radius: 4px;
+	margin: -4px -8px;
+	padding: 4px 8px;
+	box-shadow: 0 2px 4px 2px #8883;
+}
 .fediframe {
 	overflow: hidden;
 	border: 0px solid;
@@ -65,9 +72,12 @@ img.fedipic.multipic {
 .fedistat > div:hover {
 	background: #7f7f7f33;
 }
-.fedistat img, .fedipost img.darkinvert, .fedipostuser img.darkinvert {
+.fedistat img, .fedipost img.darkinvert, .fedipostuser img.darkinvert, .fedivote img.darkinvert {
 	vertical-align: text-top;
 	height: 20px;
+}
+.fedipoll {
+	margin-left: 0.5em;
 }
 .fedipostuser .media-right {
 	text-align: right;

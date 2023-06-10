@@ -24,15 +24,19 @@
 			"open": "Open",
 			"bot": "Bot",
 			"cw": "Content Warning",
-			"edited": "Edited at ${time}"
+			"edited": "Edited at ${time}",
+			"expires": "Will expire at ${time}",
+			"expired": "Final results since ${time}",
+			"highPoll": "The option with the most votes"
 		},
 		"join": {
 			"hadAcct": "Already had an account?",
 			"hadAcctText": "Congrats! You're already a part of the Fediverse!",
 			"noAcct": "Don't have an account?",
-			"noAcctText": "No worries, just choose any of the servers down below and join the party!",
+			"noAcctText": "No worries. Just choose any of the servers down below and join the party!",
 			"rndmInst": "I don't know which one to join!",
-			"rndmInstText": "Then click the button below, and let your browser choose one for you!"
+			"rndmInstText": "Then click the button below, and let your browser choose one for you!",
+			"inactive": "(inactive)"
 		}
 	},
 	"en-US": {
@@ -60,15 +64,19 @@
 			"open": "Open",
 			"bot": "Bot",
 			"cw": "Content Warning",
-			"edited": "Edited at ${time}"
+			"edited": "Edited at ${time}",
+			"expires": "Will expire at ${time}",
+			"expired": "Final results since ${time}",
+			"highPoll": "The option with the most votes"
 		},
 		"join": {
 			"hadAcct": "Already had an account?",
-			"hadAcctText": "Congrats! You're already a part of the Fediverse!",
+			"hadAcctText": "Congrats, you're already a part of the Fediverse! Come mingle with us if you haven't done that yet!",
 			"noAcct": "Don't have an account?",
-			"noAcctText": "No worries, just choose any of the servers down below and join the party!",
+			"noAcctText": "No worries. Just choose any of the servers down below and join the party.",
 			"rndmInst": "I don't know which one to join!",
-			"rndmInstText": "Then click the button below, and let your browser choose one for you!"
+			"rndmInstText": "Then click the button below, and let your browser choose one for you!",
+			"inactive": "(inactive)"
 		}
 	},
 	"fr": {
@@ -96,8 +104,19 @@
 			"open": "Ouvrir",
 			"bot": "Robot",
 			"cw": "Contentu Sensible",
-			"edited": "Modifié à ${time}"
+			"edited": "Modifié à ${time}",
+			"expires": "Expirera à ${time}",
+			"expired": "Résultats finaux depuis ${time}",
+			"highPoll": "L'option avec le plus de votes"
 		},
-		"join": {}
+		"join": {
+			"hadAcct": "Vous avez déjà un compte sur Fedi ?",
+			"hadAcctText": "Félicitations, vous faites déjà partie de la Fediverse ! Venez nous parler si ce n'est pas encore fait !",
+			"noAcct": "Vous n'avez pas un compte ?",
+			"noAcctText": "Ne t'inquiète pas ! Choisissez l'un des serveurs répertoriés et rejoignez la fête.",
+			"rndmInst": "Je ne sais pas lequel rejoindre !",
+			"rndmInstText": "Cliquez sur le bouton, et laissez votre navigateur décider pour vous !",
+			"inactive": "(inactif)"
+		}
 	}
 }

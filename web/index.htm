@@ -8,7 +8,7 @@
 	<link rel="stylesheet" href="./css/index.css" />
 	<script defer src="./js/web.js"></script>
 </head>
-<body x-data="{navItem:['navbar-item','navbar-item is-active'],viewItem:['container is-hidden','container']}">
+<body x-data="{navItem:['navbar-item','navbar-item is-active'],viewItem:['container is-hidden','container'],linearStop:'background:linear-gradient(90deg,hsla(${angle}deg,100%,50%,33%) 0%,hsla(${angle}deg,100%,50%,33%) ${stop}%,#0000 ${stop}%,#0000 100%)'}">
 	<nav class="navbar container is-fixed-top" role="navigation" x-data="{navShow: false}">
 		<div class="navbar-brand">
 			<a class="navbar-item" href="#!/timeline">
@@ -77,15 +77,31 @@
 						<template x-if="!post.cwText?.length||showCw">
 							<div class="content" x-html="post.html" :lang="post.lang"></div>
 						</template>
+						<template x-if="post.poll?.id&&!post.cwText?.length||showCw">
+							<div class="content">
+								<template x-for="opt in post.poll.options">
+									<div class="level is-mobile fedivote" :style="linearStop.replaceAll('${stop}',formatPercentage(opt.sumVote/(post.poll?.sumVoter||post.poll?.sumVote||1))).replaceAll('${angle}',Math.round(120*opt.sumVote/(post.poll?.sumVoter||post.poll?.sumVote||1)))">
+										<div class="level-left">
+											<img x-show="opt.isTop" class="darkinvert" :title="$store.str.post.highPoll" :alt="$store.str.post.highPoll" src="./img/high-poll.svg"></img><span x-show="!opt.isTop" style="width:20px;height:20px"></span>
+											<div class="level-item fedipoll" x-text="opt.title"></div>
+										</div>
+										<div class="level-right">
+											<div class="level-item"><span x-text="formatPercentage(opt.sumVote/post.poll.sumVoter)"></span>% (<span x-text="opt.sumVote"></span>)</div>
+										</div>
+									</div>
+								</template>
+								<div class="content is-size-7" x-text="(post.poll?.expired?$store.str.post.expired:$store.str.post.expires).replace('${time}',formatTime(post.poll?.atExpire))"></div>
+							</div>
+						</template>
 						<template x-if="post.media.length">
 							<div class="content is-flex is-flex-direction-row is-flex-wrap-wrap is-justify-content-space-evenly is-align-content-center">
 								<template x-for="pic in post.media">
 									<div class="fediframe is-justify-content-center is-align-content-center">
 										<template x-if="pic.type=='image'">
-											<img :class="post.media.length==1?'fedipic':'fedipic multipic'" :src="pic.url" :alt="pic.alt" :title="pic.alt" fetchpriority="low" loading="lazy"></img>
+											<img :class="post.media.length==1?'fedipic':'fedipic multipic'" :src="pic.url" :alt="pic.alt" :title="pic.alt" fetchpriority="low" loading="lazy" :style="(!post.cwReal||showCw)?'':'filter:blur(32px)'"></img>
 										</template>
 										<template x-if="['gifv','video'].indexOf(pic.type)>-1">
-											<video class="fedipic" :src="pic.url" :alt="pic.alt" :title="pic.alt" preload="metadata" :poster="pic.preview" autoplay controls loop></video>
+											<video class="fedipic" :src="pic.url" :alt="pic.alt" :title="pic.alt" preload="metadata" :poster="pic.preview" autoplay controls loop :style="(!post.cwReal||showCw)?'':'filter:brightness(0%)'"></video>
 										</template>
 									</div>
 								</template>
@@ -113,7 +129,7 @@
 				<ul>
 					<template x-for="server in $store.servers">
 						<li>
-							<a :href="'https://'+server.domain" target="_blank" x-text="server.domain" :class="server.active?'':'has-text-danger'"></a>
+							<a :href="'https://'+server.domain" target="_blank" x-text="server.active?server.domain:server.domain+' '+$store.str.join.inactive" :class="server.active?'':'has-text-danger'"></a>
 						</li>
 					</template>
 				</ul>

@@ -67,12 +67,27 @@ self.formatTime = (ts = 0, format = "DD-MM-YYYY hh:mm:ss") => {
 	result = result.replace("ss", `${date.getSeconds()}`.padStart(2, "0"));
 	return result;
 };
+self.formatPercentage = (value = 0) => {
+	return (Math.round(value * 10000) / 100) || 0;
+};
 
 // Get posts
 Alpine.store("servers", []);
 Alpine.store("posts", []);
 let postRef = {};
 let renderPost = function (post) {
+	// Deal with polls
+	if (post.poll) {
+		let maxVotes = 0.5;
+		post.poll.options?.forEach((e) => {
+			if (e.sumVote > maxVotes) {
+				maxVotes = e.sumVote;
+			};
+		});
+		post.poll.options?.forEach((e) => {
+			e.isTop = e.sumVote >= maxVotes;
+		});
+	};
 	// Render display names
 	post.user.html = post.user.dispName || post.user.username;
 	post.user.emojis.forEach((e) => {
