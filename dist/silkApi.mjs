@@ -1,6 +1,1 @@
-// src/silkApi/index.mjs
-var SilkClient = class {
-};
-export {
-  SilkClient
-};
+var t=class{};export{t as SilkClient};

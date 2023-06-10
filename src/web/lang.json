@@ -1,0 +1,36 @@
+{
+	"en": {
+		"tab": {
+			"timeline": "Timeline",
+			"artists": "Artists",
+			"docs": "Docs",
+			"about": "About"
+		},
+		"global": {
+			"comingSoon": "Coming soon!"
+		},
+		"post": {
+			"reply": "Reply",
+			"boost": "Boost",
+			"like": "Like",
+			"open": "Open"
+		}
+	},
+	"fr": {
+		"tab": {
+			"timeline": "Fils",
+			"artists": "Artistes",
+			"docs": "Docs",
+			"about": "À Propos"
+		},
+		"global": {
+			"comingSoon": "À venir!"
+		},
+		"post": {
+			"reply": "Réponse",
+			"boost": "Partage",
+			"like": "Favori",
+			"open": "Ouvrir"
+		}
+	}
+}

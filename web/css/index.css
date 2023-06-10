@@ -1,0 +1,30 @@
+@font-face {
+	font-family: "Cantarell Web";
+	font-display: fallback;
+}
+
+div, span, article {
+	cursor: default;
+}
+a {
+	cursor: pointer;
+}
+
+body {
+	font-family: "Cantarell", "Cantarell Web", sans-serif;
+}
+
+a.navbar-item.is-active {
+	background: #7f7f7f20 !important;
+}
+
+.fedipost {
+	max-width: 900px;
+	margin: 0.5em auto;
+}
+.fedipic {
+	max-width: 25vw;
+}
+[id^='tab-'] {
+	min-height: calc(100vh - 14rem);
+}

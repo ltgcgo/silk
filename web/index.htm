@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<head>
+	<meta charset="utf-8" http-equiv="200" />
+	<title>Silk Web</title>
+	<link rel="stylesheet" href="./css/bulma.css" />
+	<link rel="stylesheet" href="./css/bulma_dark.css" />
+	<link rel="stylesheet" href="./css/index.css" />
+	<script defer src="./js/web.js"></script>
+</head>
+<body x-data="{navItem:['navbar-item','navbar-item is-active'],viewItem:['container is-hidden','container']}">
+	<div class="container">
+		<nav class="navbar" role="navigation" x-data="{navShow: false}">
+			<div class="navbar-brand">
+				<a class="navbar-item" href="#!/timeline">
+					<b>Silk</b>
+				</a>
+				<a role="button" class="navbar-burger" @click="navShow=!navShow">
+					<span></span>
+					<span></span>
+					<span></span>
+				</a>
+			</div>
+			<div :class="`navbar-menu ${navShow?'is-active':''}`">
+				<div class="navbar-start">
+					<a :class="navItem[+($store.app.view=='timeline')]" href="#!/timeline" x-text="$store.str.tab.timeline"></a>
+					<a :class="navItem[+($store.app.view=='artists')]" href="#!/artists" x-text="$store.str.tab.artists"></a>
+				</div>
+				<div class="navbar-end">
+					<a :class="navItem[+($store.app.view=='about')]" href="#!/about" x-text="$store.str.tab.about"></a>
+					<a class="navbar-item" href="https://kb.ltgc.cc/silk/" target="_blank" x-text="$store.str.tab.docs"></a>
+				</div>
+			</div>
+		</nav>
+		<div :class="viewItem[+($store.app.view=='timeline')]" id="tab-timeline">
+			<template x-for="post in $store.posts">
+				<div class="card fedipost">
+					<div class="card-content">
+						<article class="media">
+							<figure class="media-left">
+								<p class="image is-64x64">
+									<img :src="post.user.avatar" decoding="async" loading="lazy"></img>
+								</p>
+							</figure>
+							<div class="media-content">
+								<p><b class="is-size-4" x-text="post.user.dispName || post.user.username"></b></p>
+								<p><a><small x-text="post.handle"></small></a></p>
+							</div>
+							<div class="media-right">
+								<p>
+									<span class="tag is-light" x-text="post.lang.toUpperCase()">EN</span>
+								</p>
+							</div>
+						</article>
+						<div class="content" x-html="post.html"></div>
+						<div class="content is-flex is-flex-direction-row is-flex-wrap-wrap is-justify-content-space-evenly is-align-content-center">
+							<template x-for="pic in post.media">
+								<p class="fedipic">
+									<img :src="pic.url" :alt="pic.alt" :title="pic.alt" fetchpriority="low" loading="lazy"></img>
+								</p>
+							</template>
+						</div>
+						<div class="fedistat is-size-6 is-flex is-flex-direction-row is-flex-wrap-wrap is-justify-content-space-evenly is-align-content-center">
+							<div><span x-text="$store.str.post.reply"></span> <span x-text="post.sumReply">?</span></div>
+							<div><span x-text="$store.str.post.boost"></span> <span x-text="post.sumBoost">?</span></div>
+							<div><span x-text="$store.str.post.like"></span> <span x-text="post.sumFav">?</span></div>
+							<div><a x-text="$store.str.post.open" target="_blank" :href="post.url"></a></div>
+						</div>
+					</div>
+				</div>
+			</template>
+		</div>
+		<div :class="viewItem[+($store.app.view=='artists')]" id="tab-artists">
+			<div class="content" x-text="$store.str.global.comingSoon"></div>
+		</div>
+		<div :class="viewItem[+($store.app.view=='about')]" id="tab-about">
+			<table class="table" style="margin: 0 auto">
+				<thead>
+					<tr>
+						<th colspan="2" class="has-text-centered">Silk</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<th>Released by</th>
+						<td><a href="https://ltgc.cc/" target="_blank">Lightingale Community</a></td>
+					</tr>
+					<tr>
+						<th>Developed by</th>
+						<td>Lumière Élevé</td>
+					</tr>
+					<tr>
+						<th rowspan="2">Dependencies</th>
+						<td><a href="https://alpinejs.dev/" target="_blank">AlpineJS</a></td>
+					</tr>
+					<tr>
+						<td><a href="https://bulma.io/" target="_blank">Bulma</a></td>
+					</tr>
+					<tr>
+						<th>Source code</th>
+						<td><a href="https://github.com/ltgcgo/silk/" target="_blank">GitHub</a></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<footer class="footer">
+		<div class="content has-text-centered has-text-grey">
+			<b>Silk</b> is a piece of open-source software licensed under GNU AGPL 3.0.
+		</div>
+	</footer>
+</body>
