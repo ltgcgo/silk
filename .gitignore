@@ -4,6 +4,7 @@
 deno.lock
 package-lock.json
 yarn.lock
+build.zip
 /.yarn/*
 /node_modules/
 /proxy/

@@ -64,7 +64,7 @@ img.fedipic.multipic {
 .fedistat > div:hover {
 	background: #7f7f7f33;
 }
-.fedistat img, .fedipost img.darkinvert, {
+.fedistat img, .fedipost img.darkinvert, .fedipostuser img.darkinvert {
 	vertical-align: text-top;
 	height: 20px;
 }
@@ -86,7 +86,7 @@ img.fedipic.multipic {
 	.darkinvert {
 		filter: invert(100%);
 	}
-	img {
+	img, video {
 		filter: brightness(80%);
 	}
 }
