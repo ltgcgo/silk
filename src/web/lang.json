@@ -22,6 +22,14 @@
 			"open": "Open",
 			"bot": "Bot",
 			"edited": "Edited at ${time}"
+		},
+		"join": {
+			"hadAcct": "Already had an account?",
+			"hadAcctText": "Congrats! You're already a part of the Fediverse!",
+			"noAcct": "Don't have an account?",
+			"noAcctText": "No worries, just choose any of the servers down below and join the party!",
+			"rndmInst": "I don't know which one to join!",
+			"rndmInstText": "Then click the button below, and let your browser choose one for you!"
 		}
 	},
 	"en-US": {
@@ -47,6 +55,14 @@
 			"open": "Open",
 			"bot": "Bot",
 			"edited": "Edited at ${time}"
+		},
+		"join": {
+			"hadAcct": "Already had an account?",
+			"hadAcctText": "Congrats! You're already a part of the Fediverse!",
+			"noAcct": "Don't have an account?",
+			"noAcctText": "No worries, just choose any of the servers down below and join the party!",
+			"rndmInst": "I don't know which one to join!",
+			"rndmInstText": "Then click the button below, and let your browser choose one for you!"
 		}
 	},
 	"fr": {
@@ -72,6 +88,7 @@
 			"open": "Ouvrir",
 			"bot": "Robot",
 			"edited": "Modifié à ${time}"
-		}
+		},
+		"join": {}
 	}
 }

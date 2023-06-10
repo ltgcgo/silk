@@ -94,3 +94,7 @@ img.fedipic.multipic {
 	padding-top: 4em;
 	min-height: calc(100vh - 168px);
 }
+
+#tab-join > div.content {
+	padding: 16px;
+}

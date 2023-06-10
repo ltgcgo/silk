@@ -69,6 +69,7 @@ self.formatTime = (ts = 0, format = "DD-MM-YYYY hh:mm:ss") => {
 };
 
 // Get posts
+Alpine.store("servers", []);
 Alpine.store("posts", []);
 let postRef = {};
 let renderPost = function (post) {
@@ -125,6 +126,20 @@ let delPost = (rid) => {};
 		};
 	};
 })();
+(async () => {
+	let failed = true;
+	while (failed) {
+		let reply = await fetch("https://api.ltgc.cc/nr/silk/servers");
+		if (reply.status == 200) {
+			(await reply.json()).forEach(async (e) => {
+				Alpine.store("servers").push(e);
+			});
+			failed = false;
+		} else {
+			await sleep(4000);
+		};
+	};
+})();
 let ws, wsConn = async function () {
 	ws = new WebSocket(`ws://api.ltgc.cc/rt/silk/timeline`);
 	ws.addEventListener("message", (ev) => {
@@ -146,3 +161,9 @@ let ws, wsConn = async function () {
 	});
 };
 wsConn();
+
+let sortingThread = setInterval(async () => {
+	Alpine.store("posts").sort((a, b) => {
+		return b.atNew - a.atNew;
+	});
+}, 15000);

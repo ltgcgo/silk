@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <head>
 	<meta charset="utf-8" http-equiv="200" />
+	<meta content="true" name="HandheldFriendly" />
 	<title>Silk Web</title>
 	<link rel="stylesheet" href="./css/bulma.css" />
 	<link rel="stylesheet" href="./css/bulma_dark.css" />
@@ -85,7 +86,21 @@
 			<div class="content" x-text="$store.str.global.comingSoon"></div>
 		</div>
 		<div :class="viewItem[+($store.app.view=='join')]" id="tab-join">
-			<div class="content" x-text="$store.str.global.comingSoon"></div>
+			<div class="content">
+				<h3 x-text="$store.str.join.hadAcct"></h3>
+				<p x-text="$store.str.join.hadAcctText"></p>
+				<h3 x-text="$store.str.join.noAcct"></h3>
+				<p x-text="$store.str.join.noAcctText"></p>
+				<ul>
+					<template x-for="server in $store.servers">
+						<li>
+							<a :href="'https://'+server.domain" target="_blank" x-text="server.domain" :class="server.active?'':'has-text-danger'"></a>
+						</li>
+					</template>
+				</ul>
+				<h3 x-text="$store.str.join.rndmInst"></h3>
+				<p x-text="$store.str.join.rndmInstText"></p>
+			</div>
 		</div>
 		<div :class="viewItem[+($store.app.view=='about')]" id="tab-about">
 			<table class="table" style="margin: 0 auto">
