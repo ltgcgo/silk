@@ -24,7 +24,23 @@ a.navbar-item.is-active {
 }
 .fedipic {
 	max-width: 25vw;
+	max-height: 50vh;
+}
+.fediframe {
+	overflow: hidden;
+	border: 0px solid;
+	border-radius: 4px;
+	background: #aaaaaa40;
+	cursor: zoom-in;
+	display: grid;
+}
+.fedimoji {
+	max-height: 24px;
+}
+.fedipostuser .fedimoji {
+	max-height: 18px;
 }
 [id^='tab-'] {
+	padding-top: 4em;
 	min-height: calc(100vh - 14rem);
 }

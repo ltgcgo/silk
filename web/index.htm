@@ -8,42 +8,42 @@
 	<script defer src="./js/web.js"></script>
 </head>
 <body x-data="{navItem:['navbar-item','navbar-item is-active'],viewItem:['container is-hidden','container']}">
+	<nav class="navbar container is-fixed-top" role="navigation" x-data="{navShow: false}">
+		<div class="navbar-brand">
+			<a class="navbar-item" href="#!/timeline">
+				<b>Silk</b>
+			</a>
+			<a role="button" class="navbar-burger" @click="navShow=!navShow">
+				<span></span>
+				<span></span>
+				<span></span>
+			</a>
+		</div>
+		<div :class="`navbar-menu ${navShow?'is-active':''}`">
+			<div class="navbar-start">
+				<a :class="navItem[+($store.app.view=='timeline')]" href="#!/timeline" x-text="$store.str.tab.timeline"></a>
+				<a :class="navItem[+($store.app.view=='artists')]" href="#!/artists" x-text="$store.str.tab.artists"></a>
+			</div>
+			<div class="navbar-end">
+				<a :class="navItem[+($store.app.view=='about')]" href="#!/about" x-text="$store.str.tab.about"></a>
+				<a class="navbar-item" href="https://kb.ltgc.cc/silk/" target="_blank" x-text="$store.str.tab.docs"></a>
+			</div>
+		</div>
+	</nav>
 	<div class="container">
-		<nav class="navbar" role="navigation" x-data="{navShow: false}">
-			<div class="navbar-brand">
-				<a class="navbar-item" href="#!/timeline">
-					<b>Silk</b>
-				</a>
-				<a role="button" class="navbar-burger" @click="navShow=!navShow">
-					<span></span>
-					<span></span>
-					<span></span>
-				</a>
-			</div>
-			<div :class="`navbar-menu ${navShow?'is-active':''}`">
-				<div class="navbar-start">
-					<a :class="navItem[+($store.app.view=='timeline')]" href="#!/timeline" x-text="$store.str.tab.timeline"></a>
-					<a :class="navItem[+($store.app.view=='artists')]" href="#!/artists" x-text="$store.str.tab.artists"></a>
-				</div>
-				<div class="navbar-end">
-					<a :class="navItem[+($store.app.view=='about')]" href="#!/about" x-text="$store.str.tab.about"></a>
-					<a class="navbar-item" href="https://kb.ltgc.cc/silk/" target="_blank" x-text="$store.str.tab.docs"></a>
-				</div>
-			</div>
-		</nav>
 		<div :class="viewItem[+($store.app.view=='timeline')]" id="tab-timeline">
 			<template x-for="post in $store.posts">
 				<div class="card fedipost">
 					<div class="card-content">
-						<article class="media">
+						<article class="media fedipostuser">
 							<figure class="media-left">
-								<p class="image is-64x64">
+								<p class="image is-48x48">
 									<img :src="post.user.avatar" decoding="async" loading="lazy"></img>
 								</p>
 							</figure>
 							<div class="media-content">
-								<p><b class="is-size-4" x-html="post.user.html || post.user.dispName || post.user.username"></b></p>
-								<p><a><small x-text="post.handle"></small></a></p>
+								<p><b class="is-size-6" x-html="post.user.html || post.user.dispName || post.user.username"></b></p>
+								<p><a><small class="is-size-7" x-text="post.handle"></small></a></p>
 							</div>
 							<div class="media-right">
 								<p>
@@ -51,12 +51,12 @@
 								</p>
 							</div>
 						</article>
-						<div class="content" x-html="post.html"></div>
+						<div class="content" x-html="post.html" :lang="post.lang"></div>
 						<div class="content is-flex is-flex-direction-row is-flex-wrap-wrap is-justify-content-space-evenly is-align-content-center">
 							<template x-for="pic in post.media">
-								<p class="fedipic">
-									<img :src="pic.url" :alt="pic.alt" :title="pic.alt" fetchpriority="low" loading="lazy"></img>
-								</p>
+								<div class="fediframe is-justify-content-center is-align-content-center">
+									<img class="fedipic" :src="pic.url" :alt="pic.alt" :title="pic.alt" fetchpriority="low" loading="lazy"></img>
+								</div>
 							</template>
 						</div>
 						<div class="fedistat is-size-6 is-flex is-flex-direction-row is-flex-wrap-wrap is-justify-content-space-evenly is-align-content-center">

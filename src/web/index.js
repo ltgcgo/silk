@@ -58,7 +58,16 @@ updateLang();
 let postStore = Alpine.store("posts", []);
 let postRef = {};
 let renderPost = function (post) {
+	// Render display names
+	post.user.html = post.user.dispName || post.user.username;
+	post.user.emojis.forEach((e) => {
+		post.user.html = post.user.html.replaceAll(`:${e.code}:`, `<img class="fedimoji" src="${e.static}" title="${e.code}" fetchpriority="low" loading="lazy"></img>`);
+	});
+	// Render posts
 	post.html = post.text;
+	post.emojis.forEach((e) => {
+		post.html = post.html.replaceAll(`:${e.code}:`, `<img class="fedimoji" src="${e.static}" title="${e.code}" fetchpriority="low" loading="lazy"></img>`);
+	});
 };
 
 Alpine.start();
@@ -88,7 +97,7 @@ let delPost = (rid) => {};
 (async () => {
 	let failed = true;
 	while (failed) {
-		let reply = await fetch("https://api.ltgc.cc/nr/silk/timeline");
+		let reply = await fetch("./test.json");
 		if (reply.status == 200) {
 			(await reply.json()).forEach(async (e) => {
 				setPost(e);
