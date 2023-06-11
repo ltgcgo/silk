@@ -50,7 +50,7 @@ a.navbar-item.is-active {
 	background-size: contain;
 	background-position: center;
 	background-repeat: no-repeat;
-	filter: hue-rotate(30deg) brightness(75%);
+	filter: hue-rotate(60deg) brightness(75%);
 }
 .fedipic {
 	max-height: 50vh;
@@ -111,6 +111,9 @@ img.fedipic.multipic {
 	}
 	img, video {
 		filter: brightness(80%);
+	}
+	.fedipostcontent a:not(.mention):after {
+		filter: hue-rotate(45deg) brightness(75%);
 	}
 }
 [id^='tab-'] {
