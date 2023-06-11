@@ -39,6 +39,19 @@ a.navbar-item.is-active {
 .fedipostcontent a .invisible:nth-child(1) {
 	display: none;
 }
+.fedipostcontent a:not(.mention):after {
+	content: '';
+	background: url("../img/open.svg");
+	margin-left: 4px;
+	width: 12px;
+	height: 20px;
+	display: inline-block;
+	vertical-align: text-top;
+	background-size: contain;
+	background-position: center;
+	background-repeat: no-repeat;
+	filter: hue-rotate(30deg) brightness(75%);
+}
 .fedipic {
 	max-height: 50vh;
 }
