@@ -99,8 +99,10 @@ let renderPost = function (post) {
 		post.html = post.html.replaceAll(`:${e.code}:`, `<img class="fedimoji" src="${e.static}" title="${e.code}" fetchpriority="low" loading="lazy"></img>`);
 	});
 	post.html = post.html
-		.replaceAll(` class="mention hashtag" rel="tag">`, ` class="mention hashtag" target="_blank" rel="tag">`)
-		.replaceAll(` class="u-url mention">`, ` class="u-url mention" href="_blank">`);
+		.replaceAll(` class="mention hashtag" rel="tag">`, ` class="mention hashtag" tabindex="1" target="_blank" rel="tag">`)
+		.replaceAll(` class="u-url mention">`, ` class="u-url mention" tabindex="1" href="_blank">`)
+		.replaceAll(` target="_blank" rel="nofollow`, ` target="_blank" tabindex="1" rel="nofollow`)
+		.replaceAll(` href="`, ` @click="linkOpener()" x-href="`);
 };
 
 Alpine.start();

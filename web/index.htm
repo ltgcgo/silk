@@ -35,9 +35,9 @@
 	<div class="container">
 		<div :class="viewItem[+($store.app.view=='timeline')]" id="tab-timeline">
 			<template x-for="post in $store.posts">
-				<div class="card fedipost" x-data="{showCw:false}">
+				<div class="card fedipost" x-data="{showCw:false}" tabindex="1">
 					<div class="card-content">
-						<article class="media fedipostuser">
+						<article class="media fedipostuser" tabindex="1">
 							<figure class="media-left">
 								<p class="image is-48x48">
 									<img :src="post.user.avatar" decoding="async" loading="lazy"></img>
@@ -58,7 +58,7 @@
 							</div>
 						</article>
 						<template x-if="post.cwText?.length">
-							<div class="level is-mobile">
+							<div class="level is-mobile" @click="showCw=!showCw" tabindex="1">
 								<div class="level-left">
 									<div class="level-item">
 										<img class="darkinvert" :title="$store.str.post.cw" :alt="$store.str.post.cw" src="./img/cw.svg"></img>
@@ -69,7 +69,7 @@
 								</div>
 								<div class="level-right">
 									<div class="level-item">
-										<a @click="showCw=!showCw"><img class="darkinvert" :title="$store.str.global.seeMore" :alt="$store.str.global.seeMore" src="./img/more.svg" x-show="!showCw"></img><img class="darkinvert" :title="$store.str.global.seeLess" :alt="$store.str.global.seeLess" src="./img/less.svg" x-show="showCw"></img></a>
+										<img class="darkinvert" :title="$store.str.global.seeMore" :alt="$store.str.global.seeMore" src="./img/more.svg" x-show="!showCw"></img><img class="darkinvert" :title="$store.str.global.seeLess" :alt="$store.str.global.seeLess" src="./img/less.svg" x-show="showCw"></img>
 									</div>
 								</div>
 							</div>
@@ -96,22 +96,22 @@
 						<template x-if="post.media.length">
 							<div class="content is-flex is-flex-direction-row is-flex-wrap-wrap is-justify-content-space-evenly is-align-content-center">
 								<template x-for="pic in post.media">
-									<div class="fediframe is-justify-content-center is-align-content-center">
+									<div class="fediframe is-justify-content-center is-align-content-center" @click="viewMedia(pic.type,pic.url,pic.alt)" tabindex="1">
 										<template x-if="pic.type=='image'">
-											<img :class="post.media.length==1?'fedipic':'fedipic multipic'" :src="pic.url" :alt="pic.alt" :title="pic.alt" fetchpriority="low" loading="lazy" :style="(!post.cwReal||showCw)?'':'filter:blur(32px)'"></img>
+											<img :class="post.media.length==1?'fedipic':'fedipic multipic'" :src="pic.url" :alt="pic.alt" :title="pic.alt" fetchpriority="low" loading="lazy" :style="(!post.cwReal||showCw)?'':'filter:blur(32px)'" tabindex="-1"></img>
 										</template>
 										<template x-if="['gifv','video'].indexOf(pic.type)>-1">
-											<video class="fedipic" :src="pic.url" :alt="pic.alt" :title="pic.alt" preload="metadata" :poster="pic.preview" autoplay controls loop :style="(!post.cwReal||showCw)?'':'filter:brightness(0%)'"></video>
+											<video class="fedipic" :src="pic.url" :alt="pic.alt" :title="pic.alt" preload="metadata" :poster="pic.preview" autoplay controls loop :style="(!post.cwReal||showCw)?'':'filter:brightness(0%)'" tabindex="-1"></video>
 										</template>
 									</div>
 								</template>
 							</div>
 						</template>
 						<div class="fedistat is-size-6 is-flex is-flex-direction-row is-flex-wrap-wrap is-justify-content-space-evenly is-align-content-center">
-							<div :title="$store.str.post.reply"><img src="./img/reply.svg" :alt="$store.str.post.reply"></img> <span x-text="post.sumReply">?</span></div>
-							<div :title="$store.str.post.boost"><img src="./img/boost.svg" :alt="$store.str.post.boost"></img> <span x-text="post.sumBoost">?</span></div>
-							<div :title="$store.str.post.like"><img :alt="$store.str.post.like" src="./img/fav.svg"></img> <span x-text="post.sumFav">?</span></div>
-							<div :title="$store.str.post.open"><a target="_blank" :href="post.url"><img src="./img/open.svg"></img></a></div>
+							<div :title="$store.str.post.reply" tabindex="1"><img src="./img/reply.svg" :alt="$store.str.post.reply"></img> <span x-text="post.sumReply">?</span></div>
+							<div :title="$store.str.post.boost" tabindex="1"><img src="./img/boost.svg" :alt="$store.str.post.boost"></img> <span x-text="post.sumBoost">?</span></div>
+							<div :title="$store.str.post.like" tabindex="1"><img :alt="$store.str.post.like" src="./img/fav.svg"></img> <span x-text="post.sumFav">?</span></div>
+							<div :title="$store.str.post.open" tabindex="1"><a target="_blank" :href="post.url" tabindex="-1"><img src="./img/open.svg"></img></a></div>
 						</div>
 					</div>
 				</div>
