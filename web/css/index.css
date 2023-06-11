@@ -36,7 +36,7 @@ a.navbar-item.is-active {
 	margin: 0.5em auto;
 	animation: 0.2s linear fadeIn;
 }
-.fedipost .invisible {
+.fedipostcontent a .invisible:nth-child(1) {
 	display: none;
 }
 .fedipic {

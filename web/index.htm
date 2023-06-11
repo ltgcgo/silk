@@ -75,7 +75,7 @@
 							</div>
 						</template>
 						<template x-if="!post.cwText?.length||showCw">
-							<div class="content" x-html="post.html" :lang="post.lang"></div>
+							<div class="content fedipostcontent" x-html="post.html" :lang="post.lang"></div>
 						</template>
 						<template x-if="post.poll?.id&&(!post.cwText?.length||showCw)">
 							<div class="content">
