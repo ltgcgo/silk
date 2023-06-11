@@ -40,7 +40,6 @@ a.navbar-item.is-active {
 	display: none;
 }
 .fedipic {
-	max-width: 80vw;
 	max-height: 50vh;
 }
 img.fedipic.multipic {
