@@ -39,6 +39,9 @@ a.navbar-item.is-active {
 	margin: 0.5em auto;
 	animation: 0.2s linear fadeIn;
 }
+.fedipostcontent {
+	word-wrap: break-word;
+}
 .fedipostcontent a .invisible:nth-child(1) {
 	display: none;
 }
