@@ -77,7 +77,7 @@
 						<template x-if="!post.cwText?.length||showCw">
 							<div class="content" x-html="post.html" :lang="post.lang"></div>
 						</template>
-						<template x-if="post.poll?.id&&!post.cwText?.length||showCw">
+						<template x-if="post.poll?.id&&(!post.cwText?.length||showCw)">
 							<div class="content">
 								<template x-for="opt in post.poll.options">
 									<div class="level is-mobile fedivote" :style="linearStop.replaceAll('${stop}',formatPercentage(opt.sumVote/(post.poll?.sumVoter||post.poll?.sumVote||1))).replaceAll('${angle}',Math.round(120*opt.sumVote/(post.poll?.sumVoter||post.poll?.sumVote||1)))">
@@ -155,14 +155,26 @@
 						<td>Lumière Élevé</td>
 					</tr>
 					<tr>
-						<th rowspan="3">Dependencies</th>
+						<th rowspan="7">Built with</th>
 						<td><a href="https://alpinejs.dev/" target="_blank">AlpineJS</a></td>
 					</tr>
 					<tr>
 						<td><a href="https://bulma.io/" target="_blank">Bulma</a></td>
 					</tr>
 					<tr>
+						<td><a href="https://deno.land/" target="_blank">Deno</a></td>
+					</tr>
+					<tr>
+						<td><a href="https://esbuild.github.io/" target="_blank">ESBuild</a></td>
+					</tr>
+					<tr>
 						<td><a href="https://feathericons.com/" target="_blank">Feather</a></td>
+					</tr>
+					<tr>
+						<td><a href="https://github.com/ltgcgo/featherweight/" target="_blank">Featherweight</a></td>
+					</tr>
+					<tr>
+						<td><a href="https://github.com/ltgcgo/wingblade/" target="_blank">WingBlade</a></td>
 					</tr>
 					<tr>
 						<th>Source code</th>
