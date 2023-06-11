@@ -3,6 +3,9 @@
 	font-display: fallback;
 	src: url("../font/cantarell_vf.woff2");
 }
+body, button {
+	font-family: "Cantarell", "Cantarell Web", sans-serif;
+}
 
 @keyframes fadeIn {
 	0% {
@@ -20,8 +23,8 @@ a {
 	cursor: pointer;
 }
 
-body, button {
-	font-family: "Cantarell", "Cantarell Web", sans-serif;
+.flex-shrink-unset {
+	flex-shrink: unset;
 }
 
 nav.navbar {
@@ -51,6 +54,9 @@ a.navbar-item.is-active {
 	background-position: center;
 	background-repeat: no-repeat;
 	filter: hue-rotate(60deg) brightness(75%);
+}
+.fedipostcw {
+	max-width: calc(100% - 20px);
 }
 .fedipic {
 	max-height: 50vh;

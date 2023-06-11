@@ -59,11 +59,11 @@
 						</article>
 						<template x-if="post.cwText?.length">
 							<div class="level is-mobile" @click="showCw=!showCw" tabindex="1">
-								<div class="level-left">
+								<div class="level-left fedipostcw">
 									<div class="level-item">
 										<img class="darkinvert" :title="$store.str.post.cw" :alt="$store.str.post.cw" src="./img/cw.svg"></img>
 									</div>
-									<div class="level-item">
+									<div class="level-item flex-shrink-unset">
 										<span x-text="post.cwText" :lang="post.lang"></span>
 									</div>
 								</div>
