@@ -20,7 +20,7 @@ a {
 	cursor: pointer;
 }
 
-body {
+body, button {
 	font-family: "Cantarell", "Cantarell Web", sans-serif;
 }
 
