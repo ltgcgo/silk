@@ -70,6 +70,19 @@ self.formatTime = (ts = 0, format = "DD-MM-YYYY hh:mm:ss") => {
 self.formatPercentage = (value = 0) => {
 	return (Math.round(value * 10000) / 100) || 0;
 };
+self.reloadPic = async (el) => {
+	el.tryCount = el.tryCount || 1;
+	if (!el) {
+		return;
+	};
+	if (el.tryCount > 10) {
+		console.warn(`Image failed to load.`, el);
+		return;
+	};
+	await sleep(3000);
+	el.src = el.src;
+	el.tryCount ++;
+};
 
 // Get posts
 Alpine.store("servers", []);
@@ -158,24 +171,28 @@ let delPost = (rid) => {};
 	};
 })();
 let ws, wsConn = async function () {
-	ws = new WebSocket(`ws://api.ltgc.cc/rt/silk/timeline`);
-	ws.addEventListener("message", (ev) => {
-		let msg = JSON.parse(ev.data);
-		let post = msg.data;
-		switch (msg.event) {
-			case "set": {
-				setPost(post, 1);
-				break;
+	try {
+		ws = new WebSocket(`wss://api.ltgc.cc/rt/silk/timeline`);
+		ws.addEventListener("message", (ev) => {
+			let msg = JSON.parse(ev.data);
+			let post = msg.data;
+			switch (msg.event) {
+				case "set": {
+					setPost(post, 1);
+					break;
+				};
+				default: {
+					console.warn(`Unknown event "${msg.event}".`, post);
+				};
 			};
-			default: {
-				console.warn(`Unknown event "${msg.event}".`, post);
-			};
-		};
-	});
-	ws.addEventListener("close", async () => {
-		await sleep(2000);
-		wsConn();
-	});
+		});
+		ws.addEventListener("close", async () => {
+			await sleep(2000);
+			wsConn();
+		});
+	} catch (err) {
+		alert(err);
+	};
 };
 wsConn();
 
