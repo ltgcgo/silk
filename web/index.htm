@@ -57,14 +57,14 @@
 								</p>
 							</div>
 						</article>
-						<template x-if="post.cwText?.length">
+						<template x-if="post.cwReal">
 							<div class="level is-mobile" @click="showCw=!showCw" tabindex="1">
 								<div class="level-left fedipostcw">
 									<div class="level-item">
 										<img class="darkinvert" :title="$store.str.post.cw" :alt="$store.str.post.cw" src="./img/cw.svg"></img>
 									</div>
 									<div class="level-item flex-shrink-unset">
-										<span x-text="post.cwText" :lang="post.lang"></span>
+										<span x-text="post.cwText||$store.str.post.imgCw" :lang="post.lang"></span>
 									</div>
 								</div>
 								<div class="level-right">
@@ -101,7 +101,7 @@
 											<img :class="post.media.length==1?'fedipic':'fedipic multipic'" :src="pic.url" :alt="pic.alt" :title="pic.alt" fetchpriority="low" loading="lazy" :style="(!post.cwReal||showCw)?'':'filter:blur(32px)'" tabindex="-1" @error="reloadPic($el)"></img>
 										</template>
 										<template x-if="['gifv','video'].indexOf(pic.type)>-1">
-											<video class="fedipic" :src="pic.url" :alt="pic.alt" :title="pic.alt" preload="metadata" :poster="pic.preview" autoplay controls loop :style="(!post.cwReal||showCw)?'':'filter:brightness(0%)'" tabindex="-1"></video>
+											<video class="fedipic" :src="pic.url" :alt="pic.alt" :title="pic.alt" preload="metadata" :poster="pic.preview" autoplay controls loop muted :style="(!post.cwReal||showCw)?'':'filter:brightness(0%)'" tabindex="-1"></video>
 										</template>
 									</div>
 								</template>
@@ -155,11 +155,14 @@
 						<td>Lumière Élevé</td>
 					</tr>
 					<tr>
-						<th rowspan="7">Built with</th>
+						<th rowspan="8">Built with</th>
 						<td><a href="https://alpinejs.dev/" target="_blank">AlpineJS</a></td>
 					</tr>
 					<tr>
 						<td><a href="https://bulma.io/" target="_blank">Bulma</a></td>
+					</tr>
+					<tr>
+						<td><a href="https://cantarell.gnome.org/" target="_blank">Cantarell</a></td>
 					</tr>
 					<tr>
 						<td><a href="https://deno.land/" target="_blank">Deno</a></td>

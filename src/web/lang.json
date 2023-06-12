@@ -27,7 +27,8 @@
 			"edited": "Edited at ${time}",
 			"expires": "Will expire at ${time}",
 			"expired": "Final results since ${time}",
-			"highPoll": "The option with the most votes"
+			"highPoll": "The option with the most votes",
+			"imgCw": "Contains spoilered images"
 		},
 		"join": {
 			"hadAcct": "Already had an account?",
@@ -67,7 +68,8 @@
 			"edited": "Edited at ${time}",
 			"expires": "Will expire at ${time}",
 			"expired": "Final results since ${time}",
-			"highPoll": "The option with the most votes"
+			"highPoll": "The option with the most votes",
+			"imgCw": "Contains spoilered images"
 		},
 		"join": {
 			"hadAcct": "Already had an account?",
@@ -107,7 +109,8 @@
 			"edited": "Modifié à ${time}",
 			"expires": "Expirera à ${time}",
 			"expired": "Résultats finaux depuis ${time}",
-			"highPoll": "L'option avec le plus de votes"
+			"highPoll": "L'option avec le plus de votes",
+			"imgCw": "Contient des images sensible"
 		},
 		"join": {
 			"hadAcct": "Vous avez déjà un compte sur Fedi ?",
