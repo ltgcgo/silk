@@ -101,7 +101,7 @@
 											<img :class="post.media.length==1?'fedipic':'fedipic multipic'" :src="pic.url" :alt="pic.alt" :title="pic.alt" fetchpriority="low" loading="lazy" :style="(!post.cwReal||showCw)?'':'filter:blur(32px)'" tabindex="-1" @error="reloadPic($el)"></img>
 										</template>
 										<template x-if="['gifv','video'].indexOf(pic.type)>-1">
-											<video class="fedipic" :src="pic.url" :alt="pic.alt" :title="pic.alt" preload="metadata" :poster="pic.preview" autoplay controls loop muted :style="(!post.cwReal||showCw)?'':'filter:brightness(0%)'" tabindex="-1"></video>
+											<video class="fedipic" :src="pic.url" :alt="pic.alt" :title="pic.alt" preload="metadata" :poster="pic.preview" controls loop :style="(!post.cwReal||showCw)?'':'filter:brightness(0%)'" tabindex="-1"></video>
 										</template>
 									</div>
 								</template>
