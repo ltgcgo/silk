@@ -32,4 +32,8 @@ ls -1 src | while IFS= read -r dir ; do
 		cat proxy/${dir}.${ext} >> dist/${dir}.${ext}
 	fi
 done
+cd web
+rm ../build.zip
+zip -r9 ../build.zip ./*
+cd ..
 exit
